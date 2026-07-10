@@ -5,6 +5,10 @@ on:
     # 13:00 UTC ≈ 6am PT / 9am ET, every day
     - cron: "0 13 * * *"
   workflow_dispatch: {}
+  # TEMPORARY: fire on push to test email delivery end-to-end; remove after.
+  push:
+    branches:
+      - claude/toyota-2lt-engine-scanner-2rlr6t
 
 permissions:
   contents: write
@@ -25,6 +29,9 @@ jobs:
           cache: pip
 
       - run: pip install -r requirements.txt
+
+      - name: Classifier regression tests
+        run: python tests/test_classify.py
 
       - name: Run scan
         env:

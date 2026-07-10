@@ -48,18 +48,35 @@ _TRANSMISSION_SIGNALS = [
 _TOYOTA_WORDS = ("toyota", "hilux", "surf", "land cruiser", "landcruiser",
                  "prado", "4runner", "pickup")
 
+# Other Toyota diesel engine codes: a listing naming one of these (without any
+# 2LT/2LTE mention) is a different engine, not a mislabeled 2L-T.
+_OTHER_DIESEL_RE = re.compile(
+    r"\b(1hz|1hd(?:\s?f?te?)?|1kz(?:\s?te?)?|1kd|2kd|12ht?|13bt?|2h|3b|14b|15b)\b")
+
+# The 2L-T is 2.4L; an explicit different displacement (4.2L, 3.0L, …) without
+# a 2LT mention means it's some other engine.
+_DISPLACEMENT_RE = re.compile(r"\b(\d\.\d)\s*l(?:iter|itre)?s?\b")
+
+# Engine-code matcher on separator-normalized text ("2L-T"/"2L T"/"2LT" →
+# "2L T"/"2LT"). Word boundaries prevent "4.2L Turbo" ("4 2L Turbo") from
+# reading as a 2LT mention: the bare-T form must end at a word boundary.
+_CODE_RE = re.compile(r"\b2\s?L\s?T(E)?\b")
+
 
 def _norm(text: str) -> str:
-    """Collapse separators so 2L-T / 2L T / 2LT all normalize to 2LT."""
-    return re.sub(r"[\s\-–—_/.]+", "", text.upper())
+    """Collapse separators to single spaces, preserving word boundaries."""
+    return re.sub(r"[\s\-–—_/.]+", " ", text.upper())
 
 
 def _mentions(text: str) -> tuple[int, int]:
     """Return (count of bare 2LT mentions, count of 2LTE mentions)."""
     norm = _norm(text)
-    lte = len(re.findall(r"2LTE", norm))
-    # 2LT mentions that are NOT part of a 2LTE mention
-    lt = len(re.findall(r"2LT(?!E)", norm))
+    lt = lte = 0
+    for m in _CODE_RE.finditer(norm):
+        if m.group(1):
+            lte += 1
+        else:
+            lt += 1
     return lt, lte
 
 
@@ -75,10 +92,18 @@ def is_relevant(listing: Listing) -> bool:
         toyota = any(w in text for w in _TOYOTA_WORDS)
         diesel = "diesel" in text or "turbo" in text
         return toyota or (diesel and not chevy)
-    # No engine code: require a Toyota word plus diesel context.
+    # No engine code: require a Toyota word plus diesel context…
     toyota = any(w in text for w in _TOYOTA_WORDS)
-    return toyota and "diesel" in text and ("2.4" in text or "engine" in text
-                                            or "motor" in text)
+    if not (toyota and "diesel" in text and ("2.4" in text or "engine" in text
+                                             or "motor" in text)):
+        return False
+    # …and reject listings that are explicitly a *different* Toyota diesel.
+    if _OTHER_DIESEL_RE.search(_norm(listing.text()).lower()):
+        return False
+    displacements = set(_DISPLACEMENT_RE.findall(text))
+    if displacements and "2.4" not in displacements:
+        return False
+    return True
 
 
 def classify(listing: Listing) -> Listing:
