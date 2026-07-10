@@ -20,6 +20,8 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
+    # SMTP credentials live in this deployment environment's secrets.
+    environment: MAIN
     steps:
       - uses: actions/checkout@v4
 
