@@ -1,0 +1,132 @@
+# Toyota 2L-T engine scanner configuration
+#
+# Target: Toyota 2L-T (2.4L turbo diesel, MECHANICAL injection pump).
+# NOT the 2L-TE (electronic injection) — but sellers frequently mislabel
+# mechanical 2L-Ts as "2LTE", so listings mentioning 2L-TE are still
+# collected and flagged for manual verification instead of discarded.
+
+recipient: david@justice.engineering
+
+# ---------------------------------------------------------------- eBay ------
+# Scraped by default. For 100% reliability register a free eBay developer
+# account and set EBAY_CLIENT_ID / EBAY_CLIENT_SECRET secrets (see README);
+# the scanner automatically switches to the official Browse API when present.
+ebay:
+  queries:
+    - toyota 2lt engine
+    - toyota 2l-t engine
+    - toyota 2lte engine
+    - toyota 2l-te engine
+    - toyota 2l turbo diesel engine
+    - hilux turbo diesel engine 2.4
+    - toyota 2.4 turbo diesel engine
+
+# ---------------------------------------------------------- Craigslist ------
+# Craigslist has no national search; we sweep the static (SEO) search results
+# of major metros. Add/remove city subdomains freely.
+craigslist:
+  queries:
+    - toyota 2lt
+    - toyota 2l-t
+    - toyota 2lte
+    - toyota 2.4 turbo diesel
+    - hilux diesel engine
+  cities:
+    - losangeles
+    - sfbay
+    - sandiego
+    - sacramento
+    - seattle
+    - portland
+    - spokane
+    - boise
+    - phoenix
+    - tucson
+    - denver
+    - saltlakecity
+    - albuquerque
+    - lasvegas
+    - dallas
+    - houston
+    - austin
+    - sanantonio
+    - oklahomacity
+    - kansascity
+    - stlouis
+    - chicago
+    - detroit
+    - minneapolis
+    - atlanta
+    - nashville
+    - charlotte
+    - raleigh
+    - miami
+    - orlando
+    - tampa
+    - newyork
+    - newjersey
+    - philadelphia
+    - boston
+    - washingtondc
+    - pittsburgh
+    - anchorage
+    - honolulu
+
+# ----------------------------------------------------- JDM importer sites ---
+# US JDM engine importers. Each entry lists one or more search URLs to try
+# (WordPress `?s=` and Shopify `/search?q=` styles); the generic parser pulls
+# any product links whose text matches the 2L-T patterns. Sites that error or
+# change layout show up in the digest's source-health table.
+jdm_sites:
+  - name: JDM Engine Depot (NJ)
+    urls:
+      - https://jdmenginedepot.com/?s=2LT
+      - https://jdmenginedepot.com/?s=2L-T
+      - https://jdmenginedepot.com/?s=toyota+diesel
+  - name: JDM Engine Zone
+    urls:
+      - https://jdmenginezone.com/search?q=2LT
+      - https://jdmenginezone.com/?s=2LT
+  - name: JDM Racing Motors
+    urls:
+      - https://www.jdmracingmotors.com/search?q=2LT
+      - https://www.jdmracingmotors.com/?s=2LT
+  - name: JDM of San Diego
+    urls:
+      - https://jdmofsandiego.com/?s=2LT
+      - https://jdmofsandiego.com/search?q=2LT
+  - name: JDM Engine Corp
+    urls:
+      - https://jdmenginecorp.com/?s=2LT
+      - https://jdmenginecorp.com/search?q=2LT
+  - name: JDM Alliance (NJ)
+    urls:
+      - https://jdmalliancellc.com/?s=2LT
+      - https://jdmalliancellc.com/search?q=2LT
+  - name: JDM New York
+    urls:
+      - https://www.jdmnewyork.com/?s=2LT
+      - https://www.jdmnewyork.com/search?q=2LT
+  - name: JDM Orlando
+    urls:
+      - https://jdmorlando.com/?s=2LT
+      - https://jdmorlando.com/search?q=2LT
+  - name: Foreign Engines (WA)
+    urls:
+      - https://www.foreignengines.com/search?q=2LT
+      - https://www.foreignengines.com/?s=2LT
+  - name: Engine World (TX)
+    urls:
+      - https://www.engineworldinc.com/?s=2LT
+      - https://www.engineworldinc.com/search?q=2LT
+
+# --------------------------------------------- optional: Google discovery ---
+# If GOOGLE_API_KEY + GOOGLE_CSE_ID secrets are set (free tier: 100
+# queries/day), these queries sweep the wider web daily — forums, small
+# importers, marketplaces we don't scrape directly.
+google:
+  queries:
+    - toyota 2LT engine for sale
+    - toyota 2L-T turbo diesel engine for sale USA
+    - toyota 2LTE engine for sale
+    - hilux 2LT engine transmission for sale
