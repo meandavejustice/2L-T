@@ -85,8 +85,14 @@ uses the Browse API instead of scraping:
    with the *Custom Search API* enabled (free tier: 100 queries/day; the
    daily run uses 4).
 2. Create a search engine at
-   [programmablesearchengine.google.com](https://programmablesearchengine.google.com)
-   set to "Search the entire web"; copy its ID.
+   [programmablesearchengine.google.com](https://programmablesearchengine.google.com).
+   Google has discontinued "search the entire web" for new engines (and is
+   sunsetting it everywhere on 2027-01-01), so configure a curated site list
+   instead — the places 2L-Ts actually surface: `forum.ih8mud.com/*`,
+   `www.yotatech.com/*`, `www.pirate4x4.com/*`, `expeditionportal.com/*`,
+   `www.marlincrawler.com/*`, `www.racingjunk.com/*`, `www.car-part.com/*`,
+   `offerup.com/*`, `www.mercari.com/*`, `*.craigslist.org` (up to 50
+   domains). Copy the engine's ID from Overview → Basic.
 3. Add secrets `GOOGLE_API_KEY` and `GOOGLE_CSE_ID`.
 
 ### 4. Test it
