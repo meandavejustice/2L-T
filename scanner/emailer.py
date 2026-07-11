@@ -17,12 +17,14 @@ def configured() -> bool:
 
 
 def send(subject: str, html_body: str, default_to: str) -> str:
+    # CI exports unset secrets as empty strings, so `or` fallbacks (not
+    # .get() defaults) are required here.
     host = os.environ["SMTP_HOST"]
-    port = int(os.environ.get("SMTP_PORT", "587"))
+    port = int(os.environ.get("SMTP_PORT") or "587")
     user = os.environ["SMTP_USERNAME"]
     password = os.environ["SMTP_PASSWORD"]
-    sender = os.environ.get("DIGEST_FROM", user)
-    to = os.environ.get("DIGEST_TO", default_to)
+    sender = os.environ.get("DIGEST_FROM") or user
+    to = os.environ.get("DIGEST_TO") or default_to
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
