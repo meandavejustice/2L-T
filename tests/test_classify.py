@@ -56,6 +56,16 @@ check("Toyota Hilux 2L Turbo Diesel Engine complete", "", True,
 check("Toyota 2 L turbo diesel motor pickup", "", True, classify.LIKELY_2LT)
 check("Toyota Supra 3.0 twin turbo 2JZ engine", "", False)
 
+# Wider L-family: collected and ranked below the turbo candidates.
+check("Toyota 2L diesel engine non turbo Hilux", "", True, classify.L_FAMILY)
+check("Toyota 3L 2.8 diesel engine pickup", "", True, classify.L_FAMILY)
+check("Toyota 5L-E diesel engine", "", True, classify.L_FAMILY)
+# An NA code plus a turbo mention smells like a mislabeled 2L-T.
+check("Toyota 3L turbo diesel engine Hilux", "", True,
+      classify.CHECK_MISLABELED)
+# Displacement strings still must not read as family codes.
+check("Chevy Silverado 4.3L V6 engine", "", False)
+
 # Codeless but plausible: 2.4 turbo diesel Toyota.
 check("Toyota pickup 2.4 turbo diesel engine complete", "", True,
       classify.UNCERTAIN)

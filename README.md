@@ -25,17 +25,22 @@ source is visible immediately instead of silently disappearing.
 
 ## The 2L-T vs 2L-TE problem
 
-Sellers mislabel constantly — mechanical 2L-Ts are very often advertised as
-"2LTE". So the scanner **keeps** 2L-TE-labeled listings and classifies each
-one:
+Sellers mislabel constantly — across the whole Toyota L family, not just
+2L-T vs 2L-TE. So the scanner sweeps every family member (2L, 2L-II, 2L-T,
+2L-TE, 3L, 5L/5L-E) and ranks by how likely each listing is to be the
+mechanical turbo 2L-T:
 
-- 🟩 **LIKELY 2L-T** — listed as 2L-T, no electronic-injection signals.
+- 🟩 **LIKELY 2L-T** — listed as 2L-T (or "2L turbo"), no
+  electronic-injection signals.
 - 🟧 **VERIFY — MAY BE MISLABELED** — e.g. listed as 2L-TE but the ad has
-  mechanical signals, or a bare "2LTE" claim with nothing confirming
-  electronics. These are the hidden gems.
+  mechanical signals, a bare "2LTE" claim with nothing confirming
+  electronics, or an NA code (3L/5L) with a turbo mentioned. These are the
+  hidden gems.
+- 🟥 **PROBABLY 2L-TE** — electronic signals present; still worth a pump
+  photo, mislabeling is rampant.
+- 🟦 **L-SERIES RELATIVE** — explicit 2L/3L/5L (naturally aspirated as
+  listed); shown because these are frequently mislabeled 2L-Ts.
 - ⬜ **UNCERTAIN** — Toyota diesel match without an explicit engine code.
-- 🟥 **PROBABLY 2L-TE** — electronic signals present; ranked last but still
-  shown.
 
 **The one-photo tiebreaker to send every seller:** ask for a picture of the
 injection pump. The 2L-T pump is fully mechanical — cable-actuated throttle

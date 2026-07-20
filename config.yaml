@@ -20,6 +20,10 @@ ebay:
     - toyota 2l turbo diesel engine
     - hilux turbo diesel engine 2.4
     - toyota 2.4 turbo diesel engine
+    - toyota 2l diesel engine
+    - toyota 3l diesel engine
+    - toyota 5l diesel engine
+    - toyota l series diesel engine
 
 # ---------------------------------------------------------- Craigslist ------
 # Craigslist has no national search; we sweep the static (SEO) search results
@@ -31,6 +35,7 @@ craigslist:
     - toyota 2lte
     - toyota 2.4 turbo diesel
     - toyota turbo diesel engine
+    - toyota diesel engine
     - hilux diesel engine
   # Weighted toward the west/PNW/mountain states where Toyota diesels
   # cluster. A misnamed subdomain just counts as a failed request in the

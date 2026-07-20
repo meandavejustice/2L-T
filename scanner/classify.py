@@ -16,12 +16,17 @@ import re
 from .models import Listing
 
 # Verdicts, in descending order of how promising they are for the buyer.
-LIKELY_2LT = "LIKELY_2LT"            # mechanical — what we want
-CHECK_MISLABELED = "CHECK_MISLABELED"  # says 2L-TE but smells mechanical, or ambiguous
-UNCERTAIN = "UNCERTAIN"              # a 2L-family turbo diesel, can't tell which
-LIKELY_2LTE = "LIKELY_2LTE"          # strong electronic signals — verify anyway
+# Sellers mislist across the whole Toyota L family (L/2L/2L-II/3L/5L and the
+# turbo 2L-T/2L-TE), so every family member is collected; ranking keeps the
+# 2L-T first.
+LIKELY_2LT = "LIKELY_2LT"            # mechanical turbo — what we want
+CHECK_MISLABELED = "CHECK_MISLABELED"  # labeled wrong for what the ad describes
+LIKELY_2LTE = "LIKELY_2LTE"          # electronic turbo — verify, often mislabeled
+L_FAMILY = "L_FAMILY"                # NA relative (2L/3L/5L...) — eyeball it
+UNCERTAIN = "UNCERTAIN"              # Toyota diesel, can't tell which
 
-_VERDICT_RANK = {LIKELY_2LT: 3, CHECK_MISLABELED: 2, UNCERTAIN: 1, LIKELY_2LTE: 0}
+_VERDICT_RANK = {LIKELY_2LT: 5, CHECK_MISLABELED: 4, LIKELY_2LTE: 3,
+                 L_FAMILY: 2, UNCERTAIN: 1}
 
 # Donor vehicles: the 2L-T (mechanical) came in Hilux pickups (LN65/LN106/
 # LN107/LN111...), early Hilux Surf LN61/LN130 (pre-8/1990), and Land Cruiser
@@ -68,6 +73,23 @@ _CODE_RE = re.compile(r"\b2\s?L\s?T(E)?\b")
 # 2LT/2LTE code matched, so it cannot double-count.
 _BARE_2L_RE = re.compile(r"(?<![\d.])\b2\s?L\b", re.I)
 
+# Ads that deny the turbo ("2L non turbo") must not promote to 2L-T.
+_NO_TURBO = ("non turbo", "non-turbo", "no turbo", "not turbo", "nonturbo")
+
+# Wider L-family codes on RAW text: 2L / 2L-II / 3L / 5L / 5L-E. The
+# lookbehind keeps displacements ("4.3L") out; the lookahead keeps 2L-T/2L-TE
+# out (those are handled as explicit code mentions above).
+_FAMILY_RE = re.compile(
+    r"(?<![\d.])\b([235])\s?L(?:\s?-?\s?(II|E))?\b(?!\s?[-–—]?\s?TE?\b)", re.I)
+
+
+def _family_codes(text: str) -> list[str]:
+    codes = set()
+    for m in _FAMILY_RE.finditer(text):
+        code = f"{m.group(1)}L" + (f"-{m.group(2).upper()}" if m.group(2) else "")
+        codes.add(code)
+    return sorted(codes)
+
 
 def _norm(text: str) -> str:
     """Collapse separators to single spaces, preserving word boundaries."""
@@ -83,7 +105,9 @@ def _mentions(text: str) -> tuple[int, int]:
             lte += 1
         else:
             lt += 1
-    if not lt and not lte and "turbo" in text.lower() and _BARE_2L_RE.search(text):
+    tl = text.lower()
+    if (not lt and not lte and "turbo" in tl and _BARE_2L_RE.search(text)
+            and not any(p in tl for p in _NO_TURBO)):
         lt = 1
     return lt, lte
 
@@ -100,6 +124,10 @@ def is_relevant(listing: Listing) -> bool:
         toyota = any(w in text for w in _TOYOTA_WORDS)
         diesel = "diesel" in text or "turbo" in text
         return toyota or (diesel and not chevy)
+    # Explicit L-family code (2L/2L-II/3L/5L): keep with Toyota/diesel context.
+    if _family_codes(listing.text()):
+        toyota = any(w in text for w in _TOYOTA_WORDS)
+        return toyota or "diesel" in text
     # No engine code: require a Toyota word plus diesel context…
     toyota = any(w in text for w in _TOYOTA_WORDS)
     if not (toyota and "diesel" in text and ("2.4" in text or "engine" in text
@@ -108,8 +136,10 @@ def is_relevant(listing: Listing) -> bool:
     # …and reject listings that are explicitly a *different* Toyota diesel.
     if _OTHER_DIESEL_RE.search(_norm(listing.text()).lower()):
         return False
+    # L-family displacements: 2.2 (L), 2.4 (2L/2L-T), 2.8 (3L). 3.0 stays out
+    # in the codeless path — it collides with the excluded 1KZ.
     displacements = set(_DISPLACEMENT_RE.findall(text))
-    if displacements and "2.4" not in displacements:
+    if displacements and not displacements & {"2.2", "2.4", "2.8"}:
         return False
     return True
 
@@ -148,6 +178,21 @@ def classify(listing: Listing) -> Listing:
                                     "confirms electronic injection. Sellers very "
                                     "often call a mechanical 2L-T a '2LTE' — ask "
                                     "for an injection pump photo.")
+    elif (fam := _family_codes(listing.text())):
+        codes = "/".join(fam)
+        if "turbo" in text and not any(p in text for p in _NO_TURBO):
+            listing.verdict = CHECK_MISLABELED
+            listing.verdict_note = (f"Listed as {codes} but mentions a turbo — "
+                                    "the NA L-series never came factory-turbocharged, "
+                                    "so this may be a mislabeled 2L-T. Ask for turbo "
+                                    "and injection-pump photos.")
+        else:
+            listing.verdict = L_FAMILY
+            listing.verdict_note = (f"Listed as {codes} — same L-series family, not "
+                                    "the turbo 2L-T as described. Sellers mislabel "
+                                    "these constantly, so a photo check is worth it: "
+                                    "factory turbo + cable-throttle mechanical pump "
+                                    "= actually a 2L-T.")
     else:
         listing.verdict = UNCERTAIN
         listing.verdict_note = ("Toyota diesel match without an explicit engine "

@@ -5,14 +5,16 @@ from __future__ import annotations
 import html
 from datetime import date
 
-from .classify import LIKELY_2LT, CHECK_MISLABELED, UNCERTAIN, LIKELY_2LTE
+from .classify import (LIKELY_2LT, CHECK_MISLABELED, LIKELY_2LTE, L_FAMILY,
+                       UNCERTAIN)
 from .models import Listing, SourceHealth
 
 _BADGES = {
     LIKELY_2LT: ("LIKELY 2L-T ✓", "#0a7a2f"),
     CHECK_MISLABELED: ("VERIFY — MAY BE MISLABELED", "#b06000"),
-    UNCERTAIN: ("UNCERTAIN — CHECK AD", "#555555"),
     LIKELY_2LTE: ("PROBABLY 2L-TE", "#8a1f1f"),
+    L_FAMILY: ("L-SERIES RELATIVE (2L/3L/5L)", "#3d5a80"),
+    UNCERTAIN: ("UNCERTAIN — CHECK AD", "#555555"),
 }
 
 
