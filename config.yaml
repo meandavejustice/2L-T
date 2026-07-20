@@ -30,45 +30,108 @@ craigslist:
     - toyota 2l-t
     - toyota 2lte
     - toyota 2.4 turbo diesel
+    - toyota turbo diesel engine
     - hilux diesel engine
+  # Weighted toward the west/PNW/mountain states where Toyota diesels
+  # cluster. A misnamed subdomain just counts as a failed request in the
+  # health note; it can't break the scan.
   cities:
     - losangeles
     - sfbay
     - sandiego
     - sacramento
+    - fresno
+    - bakersfield
+    - inlandempire
+    - orangecounty
+    - ventura
+    - santabarbara
+    - slo
+    - monterey
+    - redding
+    - chico
+    - humboldt
     - seattle
     - portland
     - spokane
+    - bellingham
+    - yakima
+    - eugene
+    - medford
+    - bend
+    - salem
     - boise
+    - idahofalls
+    - twinfalls
+    - missoula
+    - bozeman
+    - billings
+    - reno
+    - lasvegas
+    - saltlakecity
     - phoenix
     - tucson
-    - denver
-    - saltlakecity
+    - flagstaff
+    - prescott
     - albuquerque
-    - lasvegas
+    - denver
+    - cosprings
+    - fortcollins
+    - elpaso
+    - lubbock
     - dallas
     - houston
     - austin
     - sanantonio
     - oklahomacity
+    - tulsa
+    - wichita
     - kansascity
+    - omaha
+    - desmoines
     - stlouis
+    - littlerock
+    - memphis
+    - neworleans
+    - batonrouge
     - chicago
+    - milwaukee
+    - madison
     - detroit
+    - grandrapids
     - minneapolis
-    - atlanta
+    - indianapolis
+    - columbus
+    - cleveland
+    - cincinnati
+    - louisville
     - nashville
+    - knoxville
+    - chattanooga
+    - birmingham
+    - atlanta
     - charlotte
     - raleigh
+    - richmond
+    - norfolk
+    - jacksonville
     - miami
     - orlando
     - tampa
     - newyork
     - newjersey
     - philadelphia
-    - boston
-    - washingtondc
     - pittsburgh
+    - buffalo
+    - rochester
+    - albany
+    - syracuse
+    - boston
+    - providence
+    - hartford
+    - maine
+    - burlington
+    - washingtondc
     - anchorage
     - honolulu
 
@@ -86,39 +149,65 @@ jdm_sites:
   - name: JDM Engine Zone
     urls:
       - https://jdmenginezone.com/search?q=2LT
+      - https://jdmenginezone.com/search?q=toyota+diesel
       - https://jdmenginezone.com/?s=2LT
   - name: JDM Racing Motors
     urls:
       - https://www.jdmracingmotors.com/search?q=2LT
+      - https://www.jdmracingmotors.com/search?q=toyota+diesel
       - https://www.jdmracingmotors.com/?s=2LT
   - name: JDM of San Diego
     urls:
       - https://jdmofsandiego.com/?s=2LT
+      - https://jdmofsandiego.com/?s=toyota+diesel
       - https://jdmofsandiego.com/search?q=2LT
   - name: JDM Engine Corp
     urls:
       - https://jdmenginecorp.com/?s=2LT
+      - https://www.jdmenginecorp.com/?s=2LT
       - https://jdmenginecorp.com/search?q=2LT
   - name: JDM Alliance (NJ)
     urls:
       - https://jdmalliancellc.com/?s=2LT
+      - https://www.jdmalliancellc.com/?s=2LT
       - https://jdmalliancellc.com/search?q=2LT
   - name: JDM New York
     urls:
       - https://www.jdmnewyork.com/?s=2LT
+      - https://www.jdmnewyork.com/?s=toyota+diesel
       - https://www.jdmnewyork.com/search?q=2LT
   - name: JDM Orlando
     urls:
       - https://jdmorlando.com/?s=2LT
-      - https://jdmorlando.com/search?q=2LT
+      - https://www.jdmorlandoinc.com/?s=2LT
+      - https://www.jdmorlandoinc.com/?s=toyota+diesel
   - name: Foreign Engines (WA)
     urls:
       - https://www.foreignengines.com/search?q=2LT
+      - https://www.foreignengines.com/search?q=toyota+diesel
       - https://www.foreignengines.com/?s=2LT
   - name: Engine World (TX)
     urls:
       - https://www.engineworldinc.com/?s=2LT
+      - https://engineworldusa.com/?s=2LT
       - https://www.engineworldinc.com/search?q=2LT
+  - name: Diesel Toys (TX)
+    urls:
+      - https://www.dieseltoys.com/?s=2LT
+      - https://www.dieseltoys.com/?s=toyota+diesel+engine
+  - name: Torfab (WA)
+    urls:
+      - https://www.torfab.com/?s=2LT
+      - https://www.torfab.com/?s=diesel+engine
+      - https://torfab.com/search?q=2LT
+  - name: Yota1 Performance (ID)
+    urls:
+      - https://yota1performance.com/?s=2LT
+      - https://www.yota1performance.com/?s=toyota+diesel
+  - name: JDM Engine USA
+    urls:
+      - https://jdmengineusa.com/?s=2LT
+      - https://jdmengineusa.com/search?q=2LT
 
 # --------------------------------------------- optional: Google discovery ---
 # If GOOGLE_API_KEY + GOOGLE_CSE_ID secrets are set (free tier: 100

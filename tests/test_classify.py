@@ -50,6 +50,12 @@ check("Toyota 2L-TE engine 2.4 turbo diesel Hilux LN106",
 check("JDM Toyota 2LTE Turbo Diesel Engine Hilux Surf",
       "complete with ECU and wiring harness", True, classify.LIKELY_2LTE)
 
+# Bare "2L turbo" phrasing means the 2L-T; displacements must not trigger it.
+check("Toyota Hilux 2L Turbo Diesel Engine complete", "", True,
+      classify.LIKELY_2LT)
+check("Toyota 2 L turbo diesel motor pickup", "", True, classify.LIKELY_2LT)
+check("Toyota Supra 3.0 twin turbo 2JZ engine", "", False)
+
 # Codeless but plausible: 2.4 turbo diesel Toyota.
 check("Toyota pickup 2.4 turbo diesel engine complete", "", True,
       classify.UNCERTAIN)

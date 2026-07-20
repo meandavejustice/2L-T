@@ -62,6 +62,12 @@ _DISPLACEMENT_RE = re.compile(r"\b(\d\.\d)\s*l(?:iter|itre)?s?\b")
 # reading as a 2LT mention: the bare-T form must end at a word boundary.
 _CODE_RE = re.compile(r"\b2\s?L\s?T(E)?\b")
 
+# "Toyota 2L turbo" without the -T suffix still means the 2L-T (the 2L is the
+# base engine; turbo variant = 2L-T). Matched on RAW text so the lookbehind
+# can reject displacements like "4.2L turbo". Only consulted when no explicit
+# 2LT/2LTE code matched, so it cannot double-count.
+_BARE_2L_RE = re.compile(r"(?<![\d.])\b2\s?L\b", re.I)
+
 
 def _norm(text: str) -> str:
     """Collapse separators to single spaces, preserving word boundaries."""
@@ -77,6 +83,8 @@ def _mentions(text: str) -> tuple[int, int]:
             lte += 1
         else:
             lt += 1
+    if not lt and not lte and "turbo" in text.lower() and _BARE_2L_RE.search(text):
+        lt = 1
     return lt, lte
 
 
