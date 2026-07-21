@@ -30,7 +30,14 @@ def scan(config: dict) -> tuple[list[Listing], SourceHealth]:
                 params={"key": key, "cx": cse, "q": q, "num": 10, "gl": "us"},
                 timeout=25,
             )
-            resp.raise_for_status()
+            if resp.status_code >= 400:
+                # Surface Google's explanation (API disabled, billing, quota…)
+                # instead of a bare status code.
+                try:
+                    reason = resp.json()["error"]["message"]
+                except Exception:
+                    reason = resp.text[:200]
+                raise RuntimeError(f"HTTP {resp.status_code}: {reason}")
             for item in resp.json().get("items", []):
                 url = item.get("link", "")
                 lid = f"google:{url}"
