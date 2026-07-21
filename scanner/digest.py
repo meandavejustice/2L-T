@@ -85,14 +85,19 @@ def build(new: list[Listing], seen: list[Listing],
                  if len(seen_eng) > 30 else "")
     parts_section = ""
     if parts:
-        parts_cards = "".join(_card(l, l.id in new_ids) for l in parts[:12])
-        parts_more = (f'<p style="color:#777;font-size:12px;">…and {len(parts) - 12} '
-                      f'more parts listings.</p>' if len(parts) > 12 else "")
+        new_parts = sum(1 for l in parts if l.id in new_ids)
+        parts_cards = "".join(_card(l, l.id in new_ids) for l in parts[:25])
+        parts_more = (f'<p style="color:#777;font-size:12px;">…and {len(parts) - 25} '
+                      f'more parts listings.</p>' if len(parts) > 25 else "")
+        # <details> collapses in clients that support it (Apple Mail, iOS);
+        # others (Gmail) render it as a normal always-open section.
         parts_section = f"""
-  <h2 style="font-size:16px;margin-top:22px;">🔩 Parts &amp; components
-    <span style="font-weight:normal;color:#777;font-size:13px;">({len(parts)} —
-    not complete engines, kept for reference)</span></h2>
-  {parts_cards}{parts_more}"""
+  <details style="margin-top:22px;">
+    <summary style="font-size:16px;font-weight:bold;cursor:pointer;">🔩 Parts &amp;
+      components <span style="font-weight:normal;color:#777;font-size:13px;">({len(parts)}
+      listings, {new_parts} new — not complete engines; tap to expand)</span></summary>
+    <div style="margin-top:10px;">{parts_cards}{parts_more}</div>
+  </details>"""
 
     return f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:680px;margin:auto;color:#222;">
   <h1 style="font-size:20px;border-bottom:3px solid #c8102e;padding-bottom:8px;">
