@@ -53,6 +53,34 @@ _TRANSMISSION_SIGNALS = [
 _TOYOTA_WORDS = ("toyota", "hilux", "surf", "land cruiser", "landcruiser",
                  "prado", "4runner", "pickup")
 
+# Component listings (huge share of eBay family-code hits). A part signal
+# without an engine-assembly signal demotes the listing to the parts section.
+_PART_SIGNALS = [
+    "glow plug", "water pump", "oil pump", "vacuum pump", "radiator",
+    "gasket", "piston ring", "ring set", "piston", "bearing", "oil filter",
+    "air filter", "fuel filter", "timing belt", "drive belt", "belt kit",
+    "injector", "turbocharger", "cylinder head", "crankshaft", "camshaft",
+    "valve cover", "oil pan", "thermostat", "alternator", "starter motor",
+    "engine mount", "motor mount", "head gasket", "overhaul kit",
+    "rebuild kit", "repair kit", "injection pump", "oil cooler", "oil seal",
+    "seal kit", "hose", "sensor", "service manual", "repair manual",
+    "workshop manual", "decal", "emblem", "sticker", "glow controller",
+    "timing cover", "flywheel", "clutch kit", "clutch disc", "pressure plate",
+    "manifold", "fan blade", "blade fan", "fan clutch", "fan shroud",
+    "shroud", "dipstick", "pulley", "tensioner", "banjo bolt", "glow screw",
+    "wiring harness", "relay", "solenoid", "cap kit", "valve stem",
+    "starter", "starting motor", "snorkel", "pump head", "rotor",
+    "control unit", "ecu", "ecm", "blade", "transmission plate",
+    "trans plate", "engine plate", "mounting plate",
+]
+_ASSEMBLY_SIGNALS = [
+    "complete engine", "engine assembly", "complete motor", "long block",
+    "short block", "bare engine", "engine swap", "front cut", "front clip",
+    "half cut", "halfcut", "engine and trans", "motor and trans",
+    "engine with trans", "running engine", "complete swap", "drop out",
+    "engine drop", "complete with",
+]
+
 # Other Toyota diesel engine codes: a listing naming one of these (without any
 # 2LT/2LTE mention) is a different engine, not a mislabeled 2L-T.
 _OTHER_DIESEL_RE = re.compile(
@@ -204,5 +232,10 @@ def classify(listing: Listing) -> Listing:
         listing.transmission_note = ("Mentions transmission (" +
                                      ", ".join(sorted(set(t.strip() for t in trans_hits))[:4]) + ")")
 
+    listing.is_part = (any(p in text for p in _PART_SIGNALS)
+                       and not any(a in text for a in _ASSEMBLY_SIGNALS))
+
     listing.score = _VERDICT_RANK[listing.verdict] * 10 + (5 if listing.has_transmission else 0)
+    if listing.is_part:
+        listing.score -= 100
     return listing

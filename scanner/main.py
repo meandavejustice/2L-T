@@ -71,8 +71,8 @@ def run() -> int:
               "digest NOT emailed. See README for secret setup.")
 
     failed = [h for h in health if not h.ok]
-    if failed:
-        print("Sources with problems: " + ", ".join(h.source for h in failed))
+    for h in failed:
+        print(f"Source problem — {h.source}: {h.note}")
     return 0
 
 

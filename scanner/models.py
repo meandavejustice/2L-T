@@ -17,10 +17,11 @@ class Listing:
     image: str = ""
 
     # Filled in by the classifier:
-    verdict: str = ""            # LIKELY_2LT | CHECK_MISLABELED | LIKELY_2LTE | UNCERTAIN
+    verdict: str = ""            # see classify.py verdict constants
     verdict_note: str = ""
     has_transmission: bool = False
     transmission_note: str = ""
+    is_part: bool = False        # a component (pump, gasket...), not an engine
     score: int = 0               # sort key: higher = more promising
 
     def text(self) -> str:

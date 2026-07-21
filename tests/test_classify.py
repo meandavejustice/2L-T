@@ -72,4 +72,21 @@ check("Toyota pickup 2.4 turbo diesel engine complete", "", True,
 check("Toyota Hilux 2.4L turbo diesel engine and transmission front cut",
       "", True, classify.UNCERTAIN, True)
 
+def check_part(title, desc, is_part):
+    l = mk(title, desc)
+    assert classify.is_relevant(l), f"{title!r}: expected relevant"
+    classify.classify(l)
+    assert l.is_part == is_part, f"{title!r}: is_part {l.is_part} != {is_part}"
+
+
+# Parts vs complete engines: components demote to the parts section.
+check_part("Hastings Diesel STD Piston Ring Set Eng Code:2LT Turbo Toyota Pickup",
+           "", True)
+check_part("4X 12V Glow Plug for Toyota Hilux 3L 5L 2L-TE Engine", "", True)
+check_part("Injection Pump Fits Toyota Hilux 4-Runner Engine: 2L-T 2.4L", "", True)
+check_part("Toyota Hilux 2L-T turbo diesel complete engine with W56 transmission",
+           "", False)
+check_part("JDM Toyota 2LT Turbo Diesel Engine Long Block LN106", "", False)
+check_part("Toyota 2LTE turbo diesel front cut engine trans wiring", "", False)
+
 print("all classifier tests passed")
