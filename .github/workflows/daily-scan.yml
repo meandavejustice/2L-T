@@ -5,6 +5,10 @@ on:
     # 13:00 UTC ≈ 6am PT / 9am ET, every day
     - cron: "0 13 * * *"
   workflow_dispatch: {}
+  # TEMPORARY: test run for Google key fix; removed after verification.
+  push:
+    branches:
+      - claude/toyota-2lt-engine-scanner-2rlr6t
 
 permissions:
   contents: write
