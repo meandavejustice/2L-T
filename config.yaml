@@ -166,16 +166,6 @@ jdm_sites:
       - https://jdmofsandiego.com/?s=2LT
       - https://jdmofsandiego.com/?s=toyota+diesel
       - https://jdmofsandiego.com/search?q=2LT
-  - name: JDM Engine Corp
-    urls:
-      - https://jdmenginecorp.com/?s=2LT
-      - https://www.jdmenginecorp.com/?s=2LT
-      - https://jdmenginecorp.com/search?q=2LT
-  - name: JDM Alliance (NJ)
-    urls:
-      - https://jdmalliancellc.com/?s=2LT
-      - https://www.jdmalliancellc.com/?s=2LT
-      - https://jdmalliancellc.com/search?q=2LT
   - name: JDM New York
     urls:
       - https://www.jdmnewyork.com/?s=2LT
