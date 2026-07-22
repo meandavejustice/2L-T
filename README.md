@@ -13,7 +13,7 @@ transmission appears to be included.
 | **eBay** (US-located items) | Official Browse API if keys are set, page scrape otherwise | 7 query variants (2LT, 2L-T, 2LTE, 2.4 turbo diesel, …) |
 | **Craigslist** | Static SEO search results across ~38 major metros | Craigslist has no national search, so we sweep city by city |
 | **US JDM importers** | Site-search scrape of 10 importers (JDM Engine Depot, JDM Engine Zone, JDM Racing Motors, JDM of San Diego, JDM Engine Corp, JDM Alliance, JDM New York, JDM Orlando, Foreign Engines, Engine World) | Add more in `config.yaml` |
-| **Google discovery** (optional) | Programmable Search API | Catches forums (ih8mud, Marlin Crawler), small importers, and marketplaces we don't scrape — enable with free API keys |
+| **Web discovery** | DuckDuckGo (keyless) or Brave Search API | Catches forums (ih8mud, Expedition Portal), small importers, and marketplaces we don't scrape |
 
 Every digest ends with a **source health table** so a blocked or broken
 source is visible immediately instead of silently disappearing.
@@ -83,22 +83,17 @@ uses the Browse API instead of scraping:
 2. Create a **Production** keyset; copy the App ID and Cert ID.
 3. Add secrets `EBAY_CLIENT_ID` (App ID) and `EBAY_CLIENT_SECRET` (Cert ID).
 
-### 3. Optional: Google discovery
+### 3. Optional: Brave key for web discovery
 
-1. Create an API key at
-   [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
-   with the *Custom Search API* enabled (free tier: 100 queries/day; the
-   daily run uses 4).
-2. Create a search engine at
-   [programmablesearchengine.google.com](https://programmablesearchengine.google.com).
-   Google has discontinued "search the entire web" for new engines (and is
-   sunsetting it everywhere on 2027-01-01), so configure a curated site list
-   instead — the places 2L-Ts actually surface: `forum.ih8mud.com/*`,
-   `www.yotatech.com/*`, `www.pirate4x4.com/*`, `expeditionportal.com/*`,
-   `www.marlincrawler.com/*`, `www.racingjunk.com/*`, `www.car-part.com/*`,
-   `offerup.com/*`, `www.mercari.com/*`, `*.craigslist.org` (up to 50
-   domains). Copy the engine's ID from Overview → Basic.
-3. Add secrets `GOOGLE_API_KEY` and `GOOGLE_CSE_ID`.
+Web discovery works out of the box via DuckDuckGo's keyless HTML endpoint.
+For a more robust API-backed version, get a free key at
+[brave.com/search/api](https://brave.com/search/api) (free tier: 2,000
+queries/month; the daily run uses ~6) and add it as a `BRAVE_API_KEY`
+secret.
+
+Note: Google Programmable Search / Custom Search JSON API is NOT supported —
+Google closed it to new customers and is shutting it down entirely on
+2027-01-01; new projects receive a permanent 403.
 
 ### 4. Test it
 

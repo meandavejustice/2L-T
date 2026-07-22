@@ -13,7 +13,7 @@ import yaml
 
 from . import classify, digest, emailer, state
 from .models import Listing
-from .sources import craigslist, ebay, google_cse, jdm_sites
+from .sources import craigslist, discovery, ebay, jdm_sites
 
 
 def run() -> int:
@@ -41,8 +41,8 @@ def run() -> int:
     for l in found:
         listings.setdefault(l.id, l)
 
-    print("Google discovery…")
-    found, h = google_cse.scan(config.get("google", {}))
+    print("Web discovery…")
+    found, h = discovery.scan(config.get("discovery") or config.get("google", {}))
     health.append(h)
     for l in found:
         listings.setdefault(l.id, l)

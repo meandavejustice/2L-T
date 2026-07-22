@@ -204,13 +204,17 @@ jdm_sites:
       - https://jdmengineusa.com/?s=2LT
       - https://jdmengineusa.com/search?q=2LT
 
-# --------------------------------------------- optional: Google discovery ---
-# If GOOGLE_API_KEY + GOOGLE_CSE_ID secrets are set (free tier: 100
-# queries/day), these queries sweep the wider web daily — forums, small
-# importers, marketplaces we don't scrape directly.
-google:
+# ------------------------------------------------------- web discovery ------
+# Sweeps the wider web daily — forums (ih8mud, Marlin Crawler), small
+# importers, classifieds we don't scrape directly. Keyless via DuckDuckGo by
+# default; set a BRAVE_API_KEY secret to use the Brave Search API instead
+# (free tier, more robust). Google CSE is closed to new customers and is not
+# supported.
+discovery:
   queries:
     - toyota 2LT engine for sale
-    - toyota 2L-T turbo diesel engine for sale USA
+    - toyota 2L-T turbo diesel engine for sale
     - toyota 2LTE engine for sale
     - hilux 2LT engine transmission for sale
+    - toyota 2LT engine site:forum.ih8mud.com
+    - toyota diesel engine for sale site:expeditionportal.com
