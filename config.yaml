@@ -210,11 +210,13 @@ jdm_sites:
 # queries are URL-encoded Japanese ("2LT エンジン" etc.) since engine codes
 # stay Latin in Japanese titles.
 japan_exporters:
-  - name: 🇯🇵 Buyee (Yahoo Auctions JP)
+  # Buyee's search bot-blocks CI, so we search Yahoo Auctions JP directly and
+  # the scanner rewrites result links into Buyee purchase links (same IDs).
+  - name: 🇯🇵 Yahoo Auctions JP (Buyee links)
     urls:
-      - https://buyee.jp/item/search/query/2LT%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3
-      - https://buyee.jp/item/search/query/2L-T%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3
-      - https://buyee.jp/item/search/query/2LTE%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3
+      - https://auctions.yahoo.co.jp/search/search?p=2LT%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3&n=50
+      - https://auctions.yahoo.co.jp/search/search?p=2L-T%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3&n=50
+      - https://auctions.yahoo.co.jp/search/search?p=2LTE%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3&n=50
   - name: 🇯🇵 BE FORWARD Auto Parts
     urls:
       - https://autoparts.beforward.jp/search?keyword=2LT
