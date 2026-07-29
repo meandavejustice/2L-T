@@ -22,6 +22,7 @@ class Listing:
     has_transmission: bool = False
     transmission_note: str = ""
     is_part: bool = False        # a component (pump, gasket...), not an engine
+    is_import: bool = False      # Japan-side exporter listing (ships to USA)
     score: int = 0               # sort key: higher = more promising
 
     def text(self) -> str:

@@ -72,6 +72,14 @@ check("Toyota pickup 2.4 turbo diesel engine complete", "", True,
 check("Toyota Hilux 2.4L turbo diesel engine and transmission front cut",
       "", True, classify.UNCERTAIN, True)
 
+# Japanese exporter listings (engine codes stay Latin in Japanese titles).
+check("トヨタ ハイラックス 2L-T エンジン 5MT ミッション付き 実働", "", True,
+      classify.LIKELY_2LT, True)
+check("トヨタ 2LTE ディーゼルターボ エンジンASSY", "", True,
+      classify.CHECK_MISLABELED)
+check("2LT エンジン 中古", "", True, classify.LIKELY_2LT)
+
+
 def check_part(title, desc, is_part):
     l = mk(title, desc)
     assert classify.is_relevant(l), f"{title!r}: expected relevant"
@@ -88,5 +96,7 @@ check_part("Toyota Hilux 2L-T turbo diesel complete engine with W56 transmission
            "", False)
 check_part("JDM Toyota 2LT Turbo Diesel Engine Long Block LN106", "", False)
 check_part("Toyota 2LTE turbo diesel front cut engine trans wiring", "", False)
+check_part("2L-T エンジンマウント トヨタ ハイラックス", "", True)
+check_part("トヨタ 2LT エンジン本体 実働", "", False)
 
 print("all classifier tests passed")

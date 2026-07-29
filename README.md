@@ -14,6 +14,7 @@ transmission appears to be included.
 | **Craigslist** | Static SEO search results across ~38 major metros | Craigslist has no national search, so we sweep city by city |
 | **US JDM importers** | Site-search scrape of 10 importers (JDM Engine Depot, JDM Engine Zone, JDM Racing Motors, JDM of San Diego, JDM Engine Corp, JDM Alliance, JDM New York, JDM Orlando, Foreign Engines, Engine World) | Add more in `config.yaml` |
 | **Web discovery** | DuckDuckGo (keyless) or Brave Search API | Catches forums (ih8mud, Expedition Portal), small importers, and marketplaces we don't scrape |
+| **🇯🇵 Japan exporters** | Buyee (Yahoo Auctions JP), BE FORWARD, Croooober | Ships to USA; separate "Imports" digest section with freight guidance; Japanese-language classification |
 
 Every digest ends with a **source health table** so a blocked or broken
 source is visible immediately instead of silently disappearing.

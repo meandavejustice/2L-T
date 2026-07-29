@@ -61,8 +61,9 @@ def build(new: list[Listing], seen: list[Listing],
           health: list[SourceHealth]) -> str:
     today = date.today().strftime("%A, %B %d, %Y")
     order = lambda ls: sorted(ls, key=lambda l: -l.score)
-    new_eng = order([l for l in new if not l.is_part])
-    seen_eng = order([l for l in seen if not l.is_part])
+    new_eng = order([l for l in new if not l.is_part and not l.is_import])
+    seen_eng = order([l for l in seen if not l.is_part and not l.is_import])
+    imports = order([l for l in new + seen if l.is_import and not l.is_part])
     parts = order([l for l in new if l.is_part]) + \
         order([l for l in seen if l.is_part])
     new_ids = {l.id for l in new}
@@ -83,6 +84,22 @@ def build(new: list[Listing], seen: list[Listing],
     seen_more = (f'<p style="color:#777;font-size:12px;">…and {len(seen_eng) - 30} more '
                  f'previously-seen listings (see data/seen_listings.json).</p>'
                  if len(seen_eng) > 30 else "")
+    imports_section = ""
+    if imports:
+        new_imp = sum(1 for l in imports if l.id in new_ids)
+        imp_cards = "".join(_card(l, l.id in new_ids) for l in imports[:20])
+        imp_more = (f'<p style="color:#777;font-size:12px;">…and {len(imports) - 20} '
+                    f'more import listings.</p>' if len(imports) > 20 else "")
+        imports_section = f"""
+  <h2 style="font-size:16px;margin-top:22px;">🇯🇵 Imports — ships to USA
+    <span style="font-weight:normal;color:#777;font-size:13px;">({len(imports)}
+    listings, {new_imp} new)</span></h2>
+  <p style="font-size:12px;color:#777;margin:4px 0 10px 0;">Japan-side exporters
+    (Yahoo Auctions via Buyee, BE FORWARD, Croooober). Prices usually in ¥ and
+    exclude sea freight — budget roughly $250–500 (parcel) to $800–1,500
+    (pallet/consolidated) to a US port or door.</p>
+  {imp_cards}{imp_more}"""
+
     parts_section = ""
     if parts:
         new_parts = sum(1 for l in parts if l.id in new_ids)
@@ -112,6 +129,7 @@ def build(new: list[Listing], seen: list[Listing],
   <h2 style="font-size:16px;margin-top:22px;">📌 Still listed (previously found)</h2>
   {seen_section}
   {seen_more}
+  {imports_section}
   {parts_section}
 
   <h2 style="font-size:16px;margin-top:22px;">🩺 Source health</h2>
@@ -135,12 +153,15 @@ def build(new: list[Listing], seen: list[Listing],
 
 def subject(new: list[Listing]) -> str:
     d = date.today().strftime("%b %d")
-    engines = [l for l in new if not l.is_part]
+    engines = [l for l in new if not l.is_part and not l.is_import]
+    imports = sum(1 for l in new if l.is_import and not l.is_part)
+    imp_tag = f" +{imports} import{'s' if imports != 1 else ''}" if imports else ""
     if not engines:
-        parts = len(new) - len(engines)
+        parts = sum(1 for l in new if l.is_part)
         tag = f" ({parts} parts)" if parts else ""
-        return f"2L-T Scan {d}: no new engine listings{tag}"
+        return f"2L-T Scan {d}: no new US engine listings{imp_tag}{tag}"
     top = max(engines, key=lambda l: l.score)
     likely = sum(1 for l in engines if l.verdict == LIKELY_2LT)
     tag = f", {likely} likely 2L-T" if likely else ""
-    return f"2L-T Scan {d}: {len(engines)} new engine{'s' if len(engines) != 1 else ''}{tag} — {top.title[:60]}"
+    return (f"2L-T Scan {d}: {len(engines)} new engine"
+            f"{'s' if len(engines) != 1 else ''}{tag}{imp_tag} — {top.title[:60]}")

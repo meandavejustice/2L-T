@@ -13,7 +13,7 @@ import yaml
 
 from . import classify, digest, emailer, state
 from .models import Listing
-from .sources import craigslist, discovery, ebay, jdm_sites
+from .sources import craigslist, discovery, ebay, japan, jdm_sites
 
 
 def run() -> int:
@@ -37,6 +37,12 @@ def run() -> int:
 
     print("Scanning JDM importer sites…")
     found, hs = jdm_sites.scan(config.get("jdm_sites", []))
+    health.extend(hs)
+    for l in found:
+        listings.setdefault(l.id, l)
+
+    print("Japan exporters…")
+    found, hs = japan.scan(config.get("japan_exporters", []))
     health.extend(hs)
     for l in found:
         listings.setdefault(l.id, l)

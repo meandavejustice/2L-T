@@ -48,10 +48,18 @@ _TRANSMISSION_SIGNALS = [
     "w56", "g52", "g54", "l52", "r150", "manual swap", "automatic",
     "front cut", "front clip", "half cut", "halfcut", "complete swap",
     "engine and trans", "motor and trans",
+    "5mt", "ミッション", "マニュアル",
 ]
 
+# Japanese equivalents used in the diesel/turbo context checks below.
+_DIESEL_JP = "ディーゼル"
+_TURBO_JP = "ターボ"
+
 _TOYOTA_WORDS = ("toyota", "hilux", "surf", "land cruiser", "landcruiser",
-                 "prado", "4runner", "pickup")
+                 "prado", "4runner", "pickup",
+                 # Japanese (exporter listings keep engine codes in Latin)
+                 "トヨタ", "ハイラックス", "サーフ", "ランクル", "プラド",
+                 "ハイエース")
 
 # Component listings (huge share of eBay family-code hits). A part signal
 # without an engine-assembly signal demotes the listing to the parts section.
@@ -72,6 +80,10 @@ _PART_SIGNALS = [
     "starter", "starting motor", "snorkel", "pump head", "rotor",
     "control unit", "ecu", "ecm", "blade", "transmission plate",
     "trans plate", "engine plate", "mounting plate",
+    # Japanese part words
+    "マウント", "ガスケット", "ポンプ", "ラジエーター", "ラジエター",
+    "インジェクター", "ハーネス", "オルタネーター", "セルモーター",
+    "タービン", "フィルター", "ベルト", "プラグ", "センサー",
 ]
 _ASSEMBLY_SIGNALS = [
     "complete engine", "engine assembly", "complete motor", "long block",
@@ -79,6 +91,8 @@ _ASSEMBLY_SIGNALS = [
     "half cut", "halfcut", "engine and trans", "motor and trans",
     "engine with trans", "running engine", "complete swap", "drop out",
     "engine drop", "complete with",
+    # Japanese: engine unit / assy / running-when-pulled
+    "エンジン本体", "assy", "アッセンブリー", "実働", "載せ替え",
 ]
 
 # Other Toyota diesel engine codes: a listing naming one of these (without any
@@ -134,7 +148,8 @@ def _mentions(text: str) -> tuple[int, int]:
         else:
             lt += 1
     tl = text.lower()
-    if (not lt and not lte and "turbo" in tl and _BARE_2L_RE.search(text)
+    turbo = "turbo" in tl or _TURBO_JP in text
+    if (not lt and not lte and turbo and _BARE_2L_RE.search(text)
             and not any(p in tl for p in _NO_TURBO)):
         lt = 1
     return lt, lte
@@ -150,8 +165,11 @@ def is_relevant(listing: Listing) -> bool:
                                         "equinox", "malibu", "traverse", "chevy",
                                         "chevrolet", "colorado zr"))
         toyota = any(w in text for w in _TOYOTA_WORDS)
-        diesel = "diesel" in text or "turbo" in text
-        return toyota or (diesel and not chevy)
+        diesel = ("diesel" in text or "turbo" in text
+                  or _DIESEL_JP in listing.text() or _TURBO_JP in listing.text())
+        # エンジン ("engine") in a Japanese title with an explicit code is
+        # unambiguous — Chevy trim levels never appear in Japanese listings.
+        return toyota or (diesel and not chevy) or "エンジン" in listing.text()
     # Explicit L-family code (2L/2L-II/3L/5L): keep with Toyota/diesel context.
     if _family_codes(listing.text()):
         toyota = any(w in text for w in _TOYOTA_WORDS)
@@ -208,7 +226,8 @@ def classify(listing: Listing) -> Listing:
                                     "for an injection pump photo.")
     elif (fam := _family_codes(listing.text())):
         codes = "/".join(fam)
-        if "turbo" in text and not any(p in text for p in _NO_TURBO):
+        if (("turbo" in text or _TURBO_JP in text)
+                and not any(p in text for p in _NO_TURBO)):
             listing.verdict = CHECK_MISLABELED
             listing.verdict_note = (f"Listed as {codes} but mentions a turbo — "
                                     "the NA L-series never came factory-turbocharged, "

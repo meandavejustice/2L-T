@@ -204,6 +204,26 @@ jdm_sites:
       - https://jdmengineusa.com/?s=2LT
       - https://jdmengineusa.com/search?q=2LT
 
+# ------------------------------------- Japan exporters (ship to USA) --------
+# The deepest 2L-T supply is Japan-side. Listings land in the digest's
+# separate "Imports — ships to USA" section. Buyee fronts Yahoo Auctions JP;
+# queries are URL-encoded Japanese ("2LT エンジン" etc.) since engine codes
+# stay Latin in Japanese titles.
+japan_exporters:
+  - name: 🇯🇵 Buyee (Yahoo Auctions JP)
+    urls:
+      - https://buyee.jp/item/search/query/2LT%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3
+      - https://buyee.jp/item/search/query/2L-T%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3
+      - https://buyee.jp/item/search/query/2LTE%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3
+  - name: 🇯🇵 BE FORWARD Auto Parts
+    urls:
+      - https://autoparts.beforward.jp/search?keyword=2LT
+      - https://autoparts.beforward.jp/search?keyword=2L-T+engine
+  - name: 🇯🇵 Croooober (Up Garage)
+    urls:
+      - https://www.croooober.com/en/search?keyword=2LT+engine
+      - https://www.croooober.com/search?keyword=2LT
+
 # ------------------------------------------------------- web discovery ------
 # Sweeps the wider web daily — forums (ih8mud, Marlin Crawler), small
 # importers, classifieds we don't scrape directly. Keyless via DuckDuckGo by

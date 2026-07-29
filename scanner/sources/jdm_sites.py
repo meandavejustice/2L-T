@@ -17,10 +17,14 @@ from bs4 import BeautifulSoup
 from ..models import Listing, SourceHealth
 from . import http
 
-# Anchor text worth keeping: an explicit 2L-T/2L-TE code, or Toyota diesel-ish.
+# Anchor text worth keeping: an explicit 2L-T/2L-TE code, or Toyota diesel-ish
+# (Latin or Japanese — engine codes stay Latin in Japanese titles).
 _CODE_RE = re.compile(r"2\s*L\s*[-–—]?\s*TE?\b", re.I)
-_DIESEL_RE = re.compile(r"(toyota|hilux|surf|land\s*cruiser).{0,60}diesel|diesel.{0,60}(toyota|hilux)", re.I)
-_PRICE_RE = re.compile(r"\$[\d,]+(?:\.\d{2})?")
+_DIESEL_RE = re.compile(
+    r"(toyota|hilux|surf|land\s*cruiser).{0,60}diesel|diesel.{0,60}(toyota|hilux)"
+    r"|(トヨタ|ハイラックス|サーフ|ランクル).{0,30}ディーゼル|ディーゼル.{0,30}(トヨタ|ハイラックス)",
+    re.I)
+_PRICE_RE = re.compile(r"[\$¥]\s?[\d,]+(?:\.\d{2})?|[\d,]+\s?円")
 
 _SKIP_HREF = re.compile(r"(/cart|/account|/login|#|mailto:|tel:|/tag/|/category/|/collections/?$)", re.I)
 
