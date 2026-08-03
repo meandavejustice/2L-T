@@ -139,6 +139,19 @@ craigslist:
     - washingtondc
     - anchorage
     - honolulu
+  # Canadian metros (same craigslist.org subdomains) — JDM-diesel-rich thanks
+  # to the 15-year import rule; listings are flagged as imports.
+  cities_canada:
+    - vancouver
+    - victoria
+    - calgary
+    - edmonton
+    - saskatoon
+    - winnipeg
+    - toronto
+    - ottawa
+    - montreal
+    - halifax
 
 # ----------------------------------------------------- JDM importer sites ---
 # US JDM engine importers. Each entry lists one or more search URLs to try
@@ -203,6 +216,38 @@ jdm_sites:
     urls:
       - https://jdmengineusa.com/?s=2LT
       - https://jdmengineusa.com/search?q=2LT
+
+# ------------------------------------------------- forum classifieds --------
+# New-thread RSS from the big Toyota forums — the main private-party venue.
+# Threads run through the same 2L-family relevance filter as everything else.
+forums:
+  - name: ih8mud forum
+    urls:
+      - https://forum.ih8mud.com/forums/-/index.rss
+  - name: Expedition Portal forum
+    urls:
+      - https://expeditionportal.com/forum/forums/-/index.rss
+      - https://www.expeditionportal.com/forum/forums/-/index.rss
+  - name: Pirate4x4 forum
+    urls:
+      - https://www.pirate4x4.com/forums/-/index.rss
+      - https://www.pirate4x4.com/forums/external.php?type=RSS2
+  - name: YotaTech forum
+    urls:
+      - https://www.yotatech.com/forums/external.php?type=RSS2
+      - https://www.yotatech.com/forums/-/index.rss
+  - name: Marlin Crawler forum
+    urls:
+      - https://www.marlincrawler.com/forum/index.php?action=.xml;type=rss2
+      - https://forum.marlincrawler.com/index.php?action=.xml;type=rss2
+
+# ------------------------------------------- Canadian classifieds -----------
+# Flagged as imports in the digest (freight south is cheap).
+canada_sites:
+  - name: 🇨🇦 Kijiji
+    urls:
+      - https://www.kijiji.ca/b-canada/toyota-2lt/k0l0
+      - https://www.kijiji.ca/b-canada/toyota-diesel-engine/k0l0
 
 # ------------------------------------- Japan exporters (ship to USA) --------
 # The deepest 2L-T supply is Japan-side. Listings land in the digest's

@@ -11,9 +11,9 @@ import sys
 
 import yaml
 
-from . import classify, digest, emailer, state
+from . import classify, digest, emailer, state, translate
 from .models import Listing
-from .sources import craigslist, discovery, ebay, japan, jdm_sites
+from .sources import craigslist, discovery, ebay, forums, japan, jdm_sites
 
 
 def run() -> int:
@@ -23,9 +23,9 @@ def run() -> int:
     listings: dict[str, Listing] = {}
     health = []
 
-    print("Scanning eBay…")
-    found, h = ebay.scan(config.get("ebay", {}))
-    health.append(h)
+    print("Scanning eBay (US + UK/AU/CA)…")
+    found, hs = ebay.scan(config.get("ebay", {}))
+    health.extend(hs)
     for l in found:
         listings.setdefault(l.id, l)
 
@@ -41,8 +41,21 @@ def run() -> int:
     for l in found:
         listings.setdefault(l.id, l)
 
+    print("Forum classifieds (RSS)…")
+    found, hs = forums.scan(config.get("forums", []))
+    health.extend(hs)
+    for l in found:
+        listings.setdefault(l.id, l)
+
     print("Japan exporters…")
     found, hs = japan.scan(config.get("japan_exporters", []))
+    health.extend(hs)
+    for l in found:
+        listings.setdefault(l.id, l)
+
+    print("Canadian classifieds…")
+    # japan.scan is the generic import-site sweep (flags is_import).
+    found, hs = japan.scan(config.get("canada_sites", []))
     health.extend(hs)
     for l in found:
         listings.setdefault(l.id, l)
@@ -56,6 +69,16 @@ def run() -> int:
     relevant = [classify.classify(l) for l in listings.values()
                 if classify.is_relevant(l)]
     print(f"{len(listings)} raw results → {len(relevant)} relevant after filtering")
+
+    translated = 0
+    for l in relevant:
+        if translate.needs_translation(l.title):
+            l.title_en = translate.translate(l.title)
+            translated += bool(l.title_en)
+        if l.description and translate.needs_translation(l.description):
+            l.description_en = translate.translate(l.description[:300])
+    if translated:
+        print(f"{translated} listings auto-translated for display")
 
     st = state.load()
     new, seen = state.mark(st, relevant)

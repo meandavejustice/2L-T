@@ -42,20 +42,28 @@ def _parse(html: str, city: str) -> list[Listing]:
 
 
 def scan(config: dict) -> tuple[list[Listing], SourceHealth]:
-    cities = config.get("cities", [])
     queries = config.get("queries", [])
     out: dict[str, Listing] = {}
-    errors = 0
-    for city in cities:
-        for q in queries:
-            url = f"https://{city}.craigslist.org/search/sss?query={quote_plus(q)}"
-            try:
-                resp = http.get(url, delay=0.6)
-                for l in _parse(resp.text, city):
-                    out.setdefault(l.id, l)
-            except Exception:
-                errors += 1
-    total = len(cities) * len(queries)
-    ok = errors < total  # only report dead if literally everything failed
-    note = f"{len(cities)} metros swept" + (f", {errors}/{total} requests failed" if errors else "")
+    errors = total = 0
+    # Canadian metros are swept too (JDM-diesel-rich, cheap freight south);
+    # their listings are flagged as imports for the digest.
+    city_groups = ((config.get("cities", []), False),
+                   (config.get("cities_canada", []), True))
+    for cities, is_import in city_groups:
+        for city in cities:
+            for q in queries:
+                total += 1
+                url = f"https://{city}.craigslist.org/search/sss?query={quote_plus(q)}"
+                try:
+                    resp = http.get(url, delay=0.6)
+                    for l in _parse(resp.text, city):
+                        l.is_import = is_import
+                        out.setdefault(l.id, l)
+                except Exception:
+                    errors += 1
+    n_us = len(config.get("cities", []))
+    n_ca = len(config.get("cities_canada", []))
+    ok = errors < total
+    note = (f"{n_us} US + {n_ca} CA metros swept"
+            + (f", {errors}/{total} requests failed" if errors else ""))
     return list(out.values()), SourceHealth(SOURCE, ok, len(out), note)

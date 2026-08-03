@@ -35,16 +35,27 @@ def _api_token(client_id: str, client_secret: str) -> str:
     return resp.json()["access_token"]
 
 
-def _search_api(queries: list[str]) -> list[Listing]:
+# International marketplaces rich in 2L-Ts; searched with the same keys,
+# restricted to items deliverable to the US, flagged as imports.
+_INTL_MARKETPLACES = [
+    ("EBAY_GB", "eBay UK"),
+    ("EBAY_AU", "eBay Australia"),
+    ("EBAY_CA", "eBay Canada"),
+]
+
+_CURRENCY_SYMBOLS = {"USD": "$", "GBP": "£", "AUD": "AU$", "CAD": "CA$"}
+
+
+def _search_api(queries: list[str], token: str, marketplace: str,
+                item_filter: str, source: str) -> list[Listing]:
     import requests
-    token = _api_token(os.environ["EBAY_CLIENT_ID"], os.environ["EBAY_CLIENT_SECRET"])
     headers = {"Authorization": f"Bearer {token}",
-               "X-EBAY-C-MARKETPLACE-ID": "EBAY_US"}
+               "X-EBAY-C-MARKETPLACE-ID": marketplace}
     out: dict[str, Listing] = {}
     for q in queries:
         resp = requests.get(
             "https://api.ebay.com/buy/browse/v1/item_summary/search",
-            params={"q": q, "limit": "50", "filter": "itemLocationCountry:US"},
+            params={"q": q, "limit": "50", "filter": item_filter},
             headers=headers, timeout=25,
         )
         resp.raise_for_status()
@@ -52,12 +63,14 @@ def _search_api(queries: list[str]) -> list[Listing]:
             lid = f"ebay:{item['itemId']}"
             price = item.get("price", {})
             loc = item.get("itemLocation", {})
+            sym = _CURRENCY_SYMBOLS.get(price.get("currency", "USD"), "$")
             out[lid] = Listing(
-                id=lid, source=SOURCE,
+                id=lid, source=source,
                 title=item.get("title", ""),
                 url=item.get("itemWebUrl", ""),
-                price=f"${price['value']}" if price.get("value") else "",
-                location=", ".join(filter(None, [loc.get("city"), loc.get("stateOrProvince")])),
+                price=f"{sym}{price['value']}" if price.get("value") else "",
+                location=", ".join(filter(None, [loc.get("city"), loc.get("stateOrProvince"),
+                                                 loc.get("country")])),
                 description=item.get("shortDescription", "") or "",
                 image=item.get("image", {}).get("imageUrl", ""),
             )
@@ -129,15 +142,44 @@ def _search_scrape(queries: list[str]) -> list[Listing]:
     return list(out.values())
 
 
-def scan(config: dict) -> tuple[list[Listing], SourceHealth]:
+def scan(config: dict) -> tuple[list[Listing], list[SourceHealth]]:
     queries = config.get("queries", [])
+    listings: dict[str, Listing] = {}
+    health: list[SourceHealth] = []
+
+    if not (os.environ.get("EBAY_CLIENT_ID") and os.environ.get("EBAY_CLIENT_SECRET")):
+        try:
+            found = _search_scrape(queries)
+            return found, [SourceHealth(SOURCE, True, len(found),
+                                        "via page scrape (set EBAY_CLIENT_ID/SECRET "
+                                        "for the official API + intl marketplaces)")]
+        except Exception as e:
+            return [], [SourceHealth(SOURCE, False, 0, f"{type(e).__name__}: {e}")]
+
     try:
-        if os.environ.get("EBAY_CLIENT_ID") and os.environ.get("EBAY_CLIENT_SECRET"):
-            listings = _search_api(queries)
-            note = "via official Browse API"
-        else:
-            listings = _search_scrape(queries)
-            note = "via page scrape (set EBAY_CLIENT_ID/SECRET for the official API)"
-        return listings, SourceHealth(SOURCE, True, len(listings), note)
-    except Exception as e:  # a blocked/failed source must not kill the run
-        return [], SourceHealth(SOURCE, False, 0, f"{type(e).__name__}: {e}")
+        token = _api_token(os.environ["EBAY_CLIENT_ID"], os.environ["EBAY_CLIENT_SECRET"])
+    except Exception as e:
+        return [], [SourceHealth(SOURCE, False, 0, f"auth failed: {e}")]
+
+    try:
+        found = _search_api(queries, token, "EBAY_US",
+                            "itemLocationCountry:US", "eBay US")
+        for l in found:
+            listings.setdefault(l.id, l)
+        health.append(SourceHealth("eBay US", True, len(found),
+                                   "via official Browse API"))
+    except Exception as e:
+        health.append(SourceHealth("eBay US", False, 0, f"{type(e).__name__}: {e}"))
+
+    for marketplace, name in _INTL_MARKETPLACES:
+        try:
+            found = _search_api(queries, token, marketplace,
+                                "deliveryCountry:US", name)
+            for l in found:
+                l.is_import = True
+                listings.setdefault(l.id, l)
+            health.append(SourceHealth(name, True, len(found), "ships to USA"))
+        except Exception as e:
+            health.append(SourceHealth(name, False, 0, f"{type(e).__name__}: {e}"))
+
+    return list(listings.values()), health

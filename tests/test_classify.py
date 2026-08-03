@@ -99,4 +99,11 @@ check_part("Toyota 2LTE turbo diesel front cut engine trans wiring", "", False)
 check_part("2L-T エンジンマウント トヨタ ハイラックス", "", True)
 check_part("トヨタ 2LT エンジン本体 実働", "", False)
 
+# Translation detection (display-only; no network in tests).
+from scanner import translate  # noqa: E402
+assert translate.needs_translation("トヨタ ハイラックス 2L-T エンジン")
+assert translate.needs_translation("2LT エンジン 中古")
+assert not translate.needs_translation("Toyota Hilux 2L-T turbo diesel engine")
+assert not translate.needs_translation("")
+
 print("all classifier tests passed")

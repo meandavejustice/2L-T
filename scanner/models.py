@@ -15,6 +15,8 @@ class Listing:
     location: str = ""
     description: str = ""        # any extra text we captured (used by classifier)
     image: str = ""
+    title_en: str = ""           # auto-translation for display (original kept)
+    description_en: str = ""
 
     # Filled in by the classifier:
     verdict: str = ""            # see classify.py verdict constants

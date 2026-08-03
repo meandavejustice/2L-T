@@ -30,15 +30,21 @@ def _card(l: Listing, is_new: bool) -> str:
     trans = (f'<div style="color:#0a5aa6;font-size:13px;margin-top:3px;">🔧 '
              f'{_esc(l.transmission_note)}</div>' if l.has_transmission else "")
     meta = " · ".join(filter(None, [_esc(l.price), _esc(l.location), _esc(l.source)]))
+    title_disp = l.title_en or l.title
+    original = (f'<div style="color:#999;font-size:11px;margin-top:2px;">🌐 '
+                f'auto-translated · original: {_esc(l.title[:140])}</div>'
+                if l.title_en else "")
+    desc_text = l.description_en or l.description
     desc = (f'<div style="color:#666;font-size:12px;margin-top:4px;">'
-            f'{_esc(l.description[:280])}</div>' if l.description else "")
+            f'{_esc(desc_text[:280])}</div>' if desc_text else "")
     return f"""
     <div style="border:1px solid #ddd;border-radius:6px;padding:12px 14px;margin:0 0 10px 0;">
       <div style="margin-bottom:4px;">{new_tag}
         <span style="background:{badge_color};color:#fff;padding:2px 7px;border-radius:3px;
                      font-size:11px;font-weight:bold;">{badge_text}</span></div>
       <a href="{_esc(l.url)}" style="font-size:15px;font-weight:bold;color:#0a5aa6;
-         text-decoration:none;">{_esc(l.title)}</a>
+         text-decoration:none;">{_esc(title_disp)}</a>
+      {original}
       <div style="color:#333;font-size:13px;margin-top:3px;">{meta}</div>
       {trans}
       <div style="color:#444;font-size:12px;margin-top:5px;font-style:italic;">{_esc(l.verdict_note)}</div>
@@ -91,13 +97,14 @@ def build(new: list[Listing], seen: list[Listing],
         imp_more = (f'<p style="color:#777;font-size:12px;">…and {len(imports) - 20} '
                     f'more import listings.</p>' if len(imports) > 20 else "")
         imports_section = f"""
-  <h2 style="font-size:16px;margin-top:22px;">🇯🇵 Imports — ships to USA
+  <h2 style="font-size:16px;margin-top:22px;">🌍 Imports — ship to USA
     <span style="font-weight:normal;color:#777;font-size:13px;">({len(imports)}
     listings, {new_imp} new)</span></h2>
-  <p style="font-size:12px;color:#777;margin:4px 0 10px 0;">Japan-side exporters
-    (Yahoo Auctions via Buyee, BE FORWARD, Croooober). Prices usually in ¥ and
-    exclude sea freight — budget roughly $250–500 (parcel) to $800–1,500
-    (pallet/consolidated) to a US port or door.</p>
+  <p style="font-size:12px;color:#777;margin:4px 0 10px 0;">Japan (Yahoo Auctions
+    via Buyee, BE FORWARD, Croooober), eBay UK/Australia/Canada (filtered to
+    US-deliverable items), and Canadian classifieds. Foreign-currency prices
+    exclude freight — budget roughly $250–500 (parcel) to $800–1,500
+    (pallet/consolidated) from Japan; less from Canada.</p>
   {imp_cards}{imp_more}"""
 
     parts_section = ""
