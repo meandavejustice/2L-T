@@ -224,10 +224,8 @@ forums:
   - name: ih8mud forum
     urls:
       - https://forum.ih8mud.com/forums/-/index.rss
-  - name: Expedition Portal forum
-    urls:
-      - https://expeditionportal.com/forum/forums/-/index.rss
-      - https://www.expeditionportal.com/forum/forums/-/index.rss
+  # (Expedition Portal's feed 403s CI; its classifieds are covered by the
+  # web-discovery site query instead.)
   - name: Pirate4x4 forum
     urls:
       - https://www.pirate4x4.com/forums/-/index.rss
@@ -238,8 +236,8 @@ forums:
       - https://www.yotatech.com/forums/-/index.rss
   - name: Marlin Crawler forum
     urls:
+      - https://www.marlincrawler.com/forum/index.php?action=.xml&type=rss2
       - https://www.marlincrawler.com/forum/index.php?action=.xml;type=rss2
-      - https://forum.marlincrawler.com/index.php?action=.xml;type=rss2
 
 # ------------------------------------------- Canadian classifieds -----------
 # Flagged as imports in the digest (freight south is cheap).

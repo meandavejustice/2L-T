@@ -17,9 +17,26 @@ from . import http
 _TAG_RE = re.compile(r"<[^>]+>")
 
 
+_ITEM_FALLBACK_RE = re.compile(
+    r"<item>.*?<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>.*?"
+    r"<link>(.*?)</link>.*?</item>", re.S)
+
+
 def _parse_feed(content: bytes, source: str) -> list[Listing]:
     out: dict[str, Listing] = {}
-    root = ET.fromstring(content)
+    try:
+        root = ET.fromstring(content)
+    except ET.ParseError:
+        # Some feeds ship technically-invalid XML (stray entities, control
+        # chars). Fall back to regex extraction of <item> title/link pairs.
+        text = content.decode("utf-8", errors="replace")
+        for title, link in _ITEM_FALLBACK_RE.findall(text):
+            title, link = title.strip(), link.strip()
+            if title and link.startswith("http"):
+                lid = f"forum:{link}"
+                out.setdefault(lid, Listing(id=lid, source=source,
+                                            title=title[:200], url=link))
+        return list(out.values())
     # RSS 2.0 <item>; Atom uses <entry> with namespaced children.
     for item in root.iter("item"):
         title = (item.findtext("title") or "").strip()

@@ -64,7 +64,7 @@ def scan(sites: list[dict]) -> tuple[list[Listing], list[SourceHealth]]:
         reached = False
         for url in site.get("urls", []):
             try:
-                resp = http.get(url, delay=1.0)
+                resp = http.get(url, delay=1.8)
                 reached = True
                 for l in _extract(resp.text, url, name):
                     found.setdefault(l.id, l)
