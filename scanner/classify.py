@@ -81,10 +81,19 @@ _PART_SIGNALS = [
     "starter", "starting motor", "snorkel", "pump head", "rotor",
     "control unit", "ecu", "ecm", "blade", "transmission plate",
     "trans plate", "engine plate", "mounting plate",
+    "connecting rod", "conrod", "inlet valve", "exhaust valve",
+    "valve guide", "valve set", "valve spring", "turbo charger",
+    "main seal", "bolt set", "bolt kit", "stud set", "cam chain",
+    "timing chain", "chain tensioner", "glow relay", "engine cover",
     # Japanese part words
     "マウント", "ガスケット", "ポンプ", "ラジエーター", "ラジエター",
     "インジェクター", "ハーネス", "オルタネーター", "セルモーター",
     "タービン", "フィルター", "ベルト", "プラグ", "センサー",
+    "ターボチャージャー", "チャージャー", "カバー", "クランクシャフト",
+    "カムシャフト", "テンショナー", "ボルト", "ナット", "バルブ",
+    "ピストン", "リング", "コンピューター", "コンピュータ", "cpu",
+    "シール", "修理書", "整備書", "サービスマニュアル", "パーツリスト",
+    "カタログ", "ステッカー", "エンブレム", "コンロッド", "メタル",
 ]
 _ASSEMBLY_SIGNALS = [
     "complete engine", "engine assembly", "complete motor", "long block",
@@ -92,8 +101,10 @@ _ASSEMBLY_SIGNALS = [
     "half cut", "halfcut", "engine and trans", "motor and trans",
     "engine with trans", "running engine", "complete swap", "drop out",
     "engine drop", "complete with",
-    # Japanese: engine unit / assy / running-when-pulled
-    "エンジン本体", "assy", "アッセンブリー", "実働", "載せ替え",
+    # Japanese: engine unit / engine assy / running-when-pulled. Bare "assy"
+    # must NOT count — a "turbocharger assy" is still a part.
+    "エンジン本体", "エンジンassy", "engine assy", "エンジンアッセンブリー",
+    "実働", "載せ替え",
 ]
 
 # Other Toyota diesel engine codes: a listing naming one of these (without any
@@ -161,16 +172,20 @@ def is_relevant(listing: Listing) -> bool:
     text = listing.text().lower()
     lt, lte = _mentions(listing.text())
     if lt or lte:
-        # Guard against the Camaro/Silverado "2LT" trim level and similar.
+        # Guard against non-Toyota "2LT" collisions: the Chevy trim level and
+        # Yamaha's V-MAX model code (JYA2LT...).
         chevy = any(w in text for w in ("camaro", "silverado", "corvette",
                                         "equinox", "malibu", "traverse", "chevy",
-                                        "chevrolet", "colorado zr"))
+                                        "chevrolet", "colorado zr",
+                                        "yamaha", "ヤマハ", "vmax", "v-max",
+                                        "v max", "kawasaki", "カワサキ"))
         toyota = any(w in text for w in _TOYOTA_WORDS)
         diesel = ("diesel" in text or "turbo" in text
                   or _DIESEL_JP in listing.text() or _TURBO_JP in listing.text())
-        # エンジン ("engine") in a Japanese title with an explicit code is
-        # unambiguous — Chevy trim levels never appear in Japanese listings.
-        return toyota or (diesel and not chevy) or "エンジン" in listing.text()
+        # エンジン ("engine") in a Japanese title with an explicit code is a
+        # strong auto signal, but the non-Toyota guard still applies (Yamaha
+        # V-MAX listings say エンジン too).
+        return toyota or ((diesel or "エンジン" in listing.text()) and not chevy)
     # Explicit L-family code (2L/2L-II/3L/5L): keep with Toyota/diesel context.
     if _family_codes(listing.text()):
         toyota = any(w in text for w in _TOYOTA_WORDS)

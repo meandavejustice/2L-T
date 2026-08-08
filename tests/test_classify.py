@@ -37,6 +37,11 @@ check("Toyota 1HZ diesel engine", "", False)
 # Chevy trim-level noise.
 check("2016 Camaro 2LT V6 engine", "", False)
 
+# Yamaha V-MAX model codes contain "2LT" — motorcycles must not match.
+check("ヤマハ V-MAX1200 カナダ仕様 JYA2LT000HA S62年式 2LT-000〜 エンジン クランクシャフト",
+      "", False)
+check("50211S V-MAX 2LT カナダ仕様 エンジンカバー ジェネレーターカバー VMAX", "", False)
+
 # The engines we want.
 check("Toyota Hilux 2L-T turbo diesel engine with W56 5 speed transmission",
       "", True, classify.LIKELY_2LT, True)
@@ -98,6 +103,16 @@ check_part("JDM Toyota 2LT Turbo Diesel Engine Long Block LN106", "", False)
 check_part("Toyota 2LTE turbo diesel front cut engine trans wiring", "", False)
 check_part("2L-T エンジンマウント トヨタ ハイラックス", "", True)
 check_part("GEARBOX ENGINE SEALING Toyota LAND CRUISER 2.4 TD 2L-T", "", True)
+check_part("New 4PC Connecting rod For Toyota 2L 2LT", "", True)
+check_part("INLET VALVE TOYOTA LANOL CRUISER, COASTER, TURBO DIESEL 2L ENGINE 2.4",
+           "", True)
+check_part("17201-54030 TURBO CHARGER TOYOTA 2L-T FOR HILUX LAND CRUISER 2.4 LTR",
+           "", True)
+check_part("トヨタ プレビア 2L-T 2.0T 専用 ターボチャージャー ASSY 品番 17201-64030",
+           "", True)
+check_part("【絶版】 エンジン修理書 2L 2L-T 2L-THE TOYOTA トヨタ ハイラックス", "", True)
+check_part("トヨタ LN130 ハイラックスサーフ エンジンコンピューター ECP CPU 2L-T",
+           "", True)
 check_part("トヨタ 2LT エンジン本体 実働", "", False)
 
 # Translation detection (display-only; no network in tests).
