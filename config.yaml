@@ -239,10 +239,8 @@ forums:
     urls:
       - https://www.yotatech.com/forums/external.php?type=RSS2
       - https://www.yotatech.com/forums/-/index.rss
-  - name: Marlin Crawler forum
-    urls:
-      - https://www.marlincrawler.com/forum/index.php?action=.xml&type=rss2
-      - https://www.marlincrawler.com/forum/index.php?action=.xml;type=rss2
+  # (Marlin Crawler's forum exposes no working RSS; the site is covered by
+  # the web-discovery sweep instead.)
 
 # ------------------------------------------- Canadian classifieds -----------
 # Flagged as imports in the digest (freight south is cheap).
