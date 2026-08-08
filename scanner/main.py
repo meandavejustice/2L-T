@@ -7,6 +7,7 @@ digest.html, and emails the digest.
 
 from __future__ import annotations
 
+import os
 import sys
 
 import yaml
@@ -85,10 +86,15 @@ def run() -> int:
     state.save(st)
     print(f"{len(new)} new, {len(seen)} previously seen")
 
-    html_body = digest.build(new, seen, health)
+    board_url = config.get("board_url", "")
+    html_body = digest.build(new, seen, health, board_url=board_url)
     subj = digest.subject(new)
     with open("digest.html", "w") as f:
         f.write(html_body)
+    # Full uncapped board, published via GitHub Pages from docs/.
+    os.makedirs("docs", exist_ok=True)
+    with open(os.path.join("docs", "index.html"), "w") as f:
+        f.write(digest.build(new, seen, health, full=True))
     print(f"Digest written to digest.html — subject: {subj}")
 
     recipient = config.get("recipient", "")

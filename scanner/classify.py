@@ -77,6 +77,7 @@ _PART_SIGNALS = [
     "manifold", "fan blade", "blade fan", "fan clutch", "fan shroud",
     "shroud", "dipstick", "pulley", "tensioner", "banjo bolt", "glow screw",
     "wiring harness", "relay", "solenoid", "cap kit", "valve stem",
+    "sealing", "seal set", "o-ring", "oring kit", "shim", "washer",
     "starter", "starting motor", "snorkel", "pump head", "rotor",
     "control unit", "ecu", "ecm", "blade", "transmission plate",
     "trans plate", "engine plate", "mounting plate",

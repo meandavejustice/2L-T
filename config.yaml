@@ -7,6 +7,11 @@
 
 recipient: david@justice.engineering
 
+# Full uncapped listings board, written to docs/index.html each run and
+# served by GitHub Pages (one-time enable: Settings → Pages → Deploy from a
+# branch → this branch, /docs folder). Email truncation lines link here.
+board_url: https://meandavejustice.github.io/2L-T/
+
 # ---------------------------------------------------------------- eBay ------
 # Scraped by default. For 100% reliability register a free eBay developer
 # account and set EBAY_CLIENT_ID / EBAY_CLIENT_SECRET secrets (see README);

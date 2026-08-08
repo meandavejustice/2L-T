@@ -97,6 +97,7 @@ check_part("Toyota Hilux 2L-T turbo diesel complete engine with W56 transmission
 check_part("JDM Toyota 2LT Turbo Diesel Engine Long Block LN106", "", False)
 check_part("Toyota 2LTE turbo diesel front cut engine trans wiring", "", False)
 check_part("2L-T エンジンマウント トヨタ ハイラックス", "", True)
+check_part("GEARBOX ENGINE SEALING Toyota LAND CRUISER 2.4 TD 2L-T", "", True)
 check_part("トヨタ 2LT エンジン本体 実働", "", False)
 
 # Translation detection (display-only; no network in tests).

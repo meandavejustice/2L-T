@@ -63,8 +63,24 @@ def _health_rows(health: list[SourceHealth]) -> str:
     return "\n".join(rows)
 
 
+def _more(n: int, what: str, board_url: str) -> str:
+    """A '…and N more' line, linking to the full board when available."""
+    if n <= 0:
+        return ""
+    link = (f' <a href="{html.escape(board_url)}">View the full board →</a>'
+            if board_url else "")
+    return f'<p style="color:#777;font-size:12px;">…and {n} more {what}.{link}</p>'
+
+
 def build(new: list[Listing], seen: list[Listing],
-          health: list[SourceHealth]) -> str:
+          health: list[SourceHealth], *, full: bool = False,
+          board_url: str = "") -> str:
+    """Build the digest HTML.
+
+    Email mode (default) caps long sections — Gmail clips messages over
+    ~100KB — and links each truncation to the full board. full=True renders
+    everything, for the GitHub Pages board.
+    """
     today = date.today().strftime("%A, %B %d, %Y")
     order = lambda ls: sorted(ls, key=lambda l: -l.score)
     new_eng = order([l for l in new if not l.is_part and not l.is_import])
@@ -83,19 +99,25 @@ def build(new: list[Listing], seen: list[Listing],
     else:
         headline = "No matching engine listings found today"
 
+    seen_cap = len(seen_eng) if full else 30
+    parts_cap = len(parts) if full else 25
+
     new_section = ("".join(_card(l, True) for l in new_eng)
                    if new_eng else '<p style="color:#777;">Nothing new today.</p>')
-    seen_section = ("".join(_card(l, False) for l in seen_eng[:30])
+    seen_section = ("".join(_card(l, False) for l in seen_eng[:seen_cap])
                     if seen_eng else '<p style="color:#777;">None yet.</p>')
-    seen_more = (f'<p style="color:#777;font-size:12px;">…and {len(seen_eng) - 30} more '
-                 f'previously-seen listings (see data/seen_listings.json).</p>'
-                 if len(seen_eng) > 30 else "")
+    seen_more = _more(len(seen_eng) - seen_cap, "previously-seen listings",
+                      board_url)
     imports_section = ""
     if imports:
         new_imp = sum(1 for l in imports if l.id in new_ids)
-        imp_cards = "".join(_card(l, l.id in new_ids) for l in imports[:20])
-        imp_more = (f'<p style="color:#777;font-size:12px;">…and {len(imports) - 20} '
-                    f'more import listings.</p>' if len(imports) > 20 else "")
+        # New import engines are always shown in full; previously-seen ones
+        # are capped in email mode.
+        imp_new = [l for l in imports if l.id in new_ids]
+        imp_seen = [l for l in imports if l.id not in new_ids]
+        shown = imports if full else imp_new + imp_seen[:15]
+        imp_cards = "".join(_card(l, l.id in new_ids) for l in shown)
+        imp_more = _more(len(imports) - len(shown), "import listings", board_url)
         imports_section = f"""
   <h2 style="font-size:16px;margin-top:22px;">🌍 Imports — ship to USA
     <span style="font-weight:normal;color:#777;font-size:13px;">({len(imports)}
@@ -110,9 +132,8 @@ def build(new: list[Listing], seen: list[Listing],
     parts_section = ""
     if parts:
         new_parts = sum(1 for l in parts if l.id in new_ids)
-        parts_cards = "".join(_card(l, l.id in new_ids) for l in parts[:25])
-        parts_more = (f'<p style="color:#777;font-size:12px;">…and {len(parts) - 25} '
-                      f'more parts listings.</p>' if len(parts) > 25 else "")
+        parts_cards = "".join(_card(l, l.id in new_ids) for l in parts[:parts_cap])
+        parts_more = _more(len(parts) - parts_cap, "parts listings", board_url)
         # <details> collapses in clients that support it (Apple Mail, iOS);
         # others (Gmail) render it as a normal always-open section.
         parts_section = f"""
@@ -125,10 +146,11 @@ def build(new: list[Listing], seen: list[Listing],
 
     return f"""<div style="font-family:Arial,Helvetica,sans-serif;max-width:680px;margin:auto;color:#222;">
   <h1 style="font-size:20px;border-bottom:3px solid #c8102e;padding-bottom:8px;">
-    🔍 Toyota 2L-T Daily Scan — {today}</h1>
+    🔍 Toyota 2L-T Daily Scan — {today}{" · full board" if full else ""}</h1>
   <p style="font-size:14px;"><b>{headline}.</b> Target: <b>2L-T</b> (2.4L turbo diesel,
   <b>mechanical</b> injection) — not the electronic 2L-TE, but 2L-TE-labeled ads are
-  included and flagged because sellers mislabel constantly.</p>
+  included and flagged because sellers mislabel constantly.
+  {f'<a href="{html.escape(board_url)}" style="font-size:13px;">Browse every tracked listing on the full board →</a>' if board_url and not full else ''}</p>
 
   <h2 style="font-size:16px;margin-top:22px;">🆕 New since last scan</h2>
   {new_section}
