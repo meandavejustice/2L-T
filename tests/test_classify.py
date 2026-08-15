@@ -113,6 +113,15 @@ check_part("トヨタ プレビア 2L-T 2.0T 専用 ターボチャージャー 
 check_part("【絶版】 エンジン修理書 2L 2L-T 2L-THE TOYOTA トヨタ ハイラックス", "", True)
 check_part("トヨタ LN130 ハイラックスサーフ エンジンコンピューター ECP CPU 2L-T",
            "", True)
+check_part("Complete Cylinder Head with Valves 11101-54121 for Toyota Engine 2LT",
+           "", True)
+check_part("For Toyota Hilux 2L 2L-T 1983-1998 Complete Engine Gasket Kit", "", True)
+check_part("13201-59105 CON ROD TOYOTA 2L-T 2L-TE 3L 5L FOR HILUX", "", True)
+check_part("トヨタ クラウン MIYACO ミヤコ サーモスタット LS130 2LTE DIE TS-221",
+           "", True)
+check_part("Toyota W58 Bell housing For L Engine 2L, 2LT, 3L Used", "", True)
+check_part("Toyota Hilux Surf MK5 1992 2.4D 2L-TE - Engine Bracket", "", True)
+check_part("Toyota 2L, 2L-T Motor Zusatz-Werkstatthandbuch August 1995", "", True)
 check_part("トヨタ 2LT エンジン本体 実働", "", False)
 
 # Translation detection (display-only; no network in tests).

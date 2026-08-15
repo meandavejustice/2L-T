@@ -85,6 +85,15 @@ _PART_SIGNALS = [
     "valve guide", "valve set", "valve spring", "turbo charger",
     "main seal", "bolt set", "bolt kit", "stud set", "cam chain",
     "timing chain", "chain tensioner", "glow relay", "engine cover",
+    "brake", "ball joint", "tie rod", "cv joint", "drum", "gear case",
+    "timing gear", "valve lifter", "lifter set", "re-ring", "rering",
+    "turbo kit", "down pipe", "downpipe", "dump pipe", "flange",
+    "wiring loom", "loom", "stud nut", "oil line", "water line",
+    "line kit", "copper core", "adrad", "intercooler", "service kit",
+    "filter", "valve seal", "mount ", "mounting", "con rod", "bracket",
+    "engine part", "bell housing", "bellhousing", "rocker", "rad cap",
+    "cap lever", "fitting", "fittng", "brochure", "handbuch", "werkstatt",
+    "fleetguard", "covers petrol",
     # Japanese part words
     "マウント", "ガスケット", "ポンプ", "ラジエーター", "ラジエター",
     "インジェクター", "ハーネス", "オルタネーター", "セルモーター",
@@ -94,27 +103,52 @@ _PART_SIGNALS = [
     "ピストン", "リング", "コンピューター", "コンピュータ", "cpu",
     "シール", "修理書", "整備書", "サービスマニュアル", "パーツリスト",
     "カタログ", "ステッカー", "エンブレム", "コンロッド", "メタル",
+    "サーモスタット", "プーリー", "アイドラー", "シリンダーヘッド",
+    "ロッカー", "ダウンサス", "ダウンフォース", "レシーバ", "リザーブ",
+    "エアコン", "タンク", "補修",
 ]
+# Only ENGINE-specific assembly wording can rescue a listing that also has a
+# part signal — bare "complete"/"recon" must not ("Complete Cylinder Head"
+# is a head, not an engine).
 _ASSEMBLY_SIGNALS = [
     "complete engine", "engine assembly", "complete motor", "long block",
     "short block", "bare engine", "engine swap", "front cut", "front clip",
     "half cut", "halfcut", "engine and trans", "motor and trans",
     "engine with trans", "running engine", "complete swap", "drop out",
-    "engine drop", "complete with",
+    "engine drop",
     # Japanese: engine unit / engine assy / running-when-pulled. Bare "assy"
     # must NOT count — a "turbocharger assy" is still a part.
     "エンジン本体", "エンジンassy", "engine assy", "エンジンアッセンブリー",
     "実働", "載せ替え",
 ]
 
+# "…kit"/"…set" style wording marks a parts product even when assembly words
+# appear ("Complete Engine Gasket Kit" is a gasket kit, not an engine).
+_KIT_OVERRIDES = (" kit", " set", "pair of", " pcs", "2x ", "4x ", "x2 ",
+                  "x4 ", "セット")
+
+# Fluids: "5L" on an oil/coolant bottle is 5 liters, not the 5L engine.
+_VISCOSITY_RE = re.compile(r"\b\d{1,2}w[- ]?\d{2}\b")
+_FLUID_WORDS = ("engine oil", "motor oil", "coolant", "antifreeze",
+                "anti-freeze", "anti-boil")
+
+# Modern Toyota diesels and non-Toyota lumps that sneak past the family
+# regex via "2.0 diesel"-style titles.
+_MODERN_WORDS = ("avensis", "rav4", "rav-4", "aygo", "proace", "corolla",
+                 "yaris", "auris", "verso", "invincible", "hdi", "bluehdi",
+                 "gun1", "kun2")
+
 # Other Toyota diesel engine codes: a listing naming one of these (without any
 # 2LT/2LTE mention) is a different engine, not a mislabeled 2L-T.
 _OTHER_DIESEL_RE = re.compile(
-    r"\b(1hz|1hd(?:\s?f?te?)?|1kz(?:\s?te?)?|1kd|2kd|12ht?|13bt?|2h|3b|14b|15b)\b")
+    r"\b(1hz|1hd(?:\s?f?te?)?|1kz(?:\s?te?)?|1kd|2kd|12ht?|13bt?|2h|3b|14b|15b"
+    r"|1ad|2ad|1gd|2gd|1cd|2cd|1nd|2az|dw10|d\s?4\s?d)\b")
 
 # The 2L-T is 2.4L; an explicit different displacement (4.2L, 3.0L, …) without
-# a 2LT mention means it's some other engine.
-_DISPLACEMENT_RE = re.compile(r"\b(\d\.\d)\s*l(?:iter|itre)?s?\b")
+# a 2LT mention means it's some other engine. "2.0 diesel"/"3.0 TD" style
+# phrasing (no "L") counts too.
+_DISPLACEMENT_RE = re.compile(
+    r"\b(\d\.\d)\s*(?:l(?:iter|itre)?s?\b|td\b|turbo\b|diesel\b|d\b)")
 
 # Engine-code matcher on separator-normalized text ("2L-T"/"2L T"/"2LT" →
 # "2L T"/"2LT"). Word boundaries prevent "4.2L Turbo" ("4 2L Turbo") from
@@ -170,6 +204,10 @@ def _mentions(text: str) -> tuple[int, int]:
 def is_relevant(listing: Listing) -> bool:
     """Keep only plausible 2L-family turbo diesel listings."""
     text = listing.text().lower()
+    # Fluids first: oil/coolant bottles are sized in liters ("5L 5W-30"),
+    # which collides with the 5L engine code.
+    if _VISCOSITY_RE.search(text) or any(w in text for w in _FLUID_WORDS):
+        return False
     lt, lte = _mentions(listing.text())
     if lt or lte:
         # Guard against non-Toyota "2LT" collisions: the Chevy trim level and
@@ -186,17 +224,21 @@ def is_relevant(listing: Listing) -> bool:
         # strong auto signal, but the non-Toyota guard still applies (Yamaha
         # V-MAX listings say エンジン too).
         return toyota or ((diesel or "エンジン" in listing.text()) and not chevy)
+    # Modern Toyota diesels (D-4D era) and rebadged non-Toyota lumps are a
+    # different world entirely — reject on either codeless or family path.
+    modern = (any(w in text for w in _MODERN_WORDS)
+              or _OTHER_DIESEL_RE.search(_norm(listing.text()).lower()))
     # Explicit L-family code (2L/2L-II/3L/5L): keep with Toyota/diesel context.
     if _family_codes(listing.text()):
         toyota = any(w in text for w in _TOYOTA_WORDS)
-        return toyota or "diesel" in text
+        return (toyota or "diesel" in text) and not modern
     # No engine code: require a Toyota word plus diesel context…
     toyota = any(w in text for w in _TOYOTA_WORDS)
     if not (toyota and "diesel" in text and ("2.4" in text or "engine" in text
                                              or "motor" in text)):
         return False
     # …and reject listings that are explicitly a *different* Toyota diesel.
-    if _OTHER_DIESEL_RE.search(_norm(listing.text()).lower()):
+    if modern:
         return False
     # L-family displacements: 2.2 (L), 2.4 (2L/2L-T), 2.8 (3L). 3.0 stays out
     # in the codeless path — it collides with the excluded 1KZ.
@@ -267,8 +309,12 @@ def classify(listing: Listing) -> Listing:
         listing.transmission_note = ("Mentions transmission (" +
                                      ", ".join(sorted(set(t.strip() for t in trans_hits))[:4]) + ")")
 
-    listing.is_part = (any(p in text for p in _PART_SIGNALS)
-                       and not any(a in text for a in _ASSEMBLY_SIGNALS))
+    part = any(p in text for p in _PART_SIGNALS)
+    assembly = any(a in text for a in _ASSEMBLY_SIGNALS)
+    kit = any(k in text for k in _KIT_OVERRIDES)
+    # Kit/set wording keeps a listing in parts even when assembly words
+    # appear ("Complete Engine Gasket Kit").
+    listing.is_part = part and (kit or not assembly)
 
     listing.score = _VERDICT_RANK[listing.verdict] * 10 + (5 if listing.has_transmission else 0)
     if listing.is_part:

@@ -27,6 +27,10 @@ _DIESEL_RE = re.compile(
 _PRICE_RE = re.compile(r"[\$¥]\s?[\d,]+(?:\.\d{2})?|[\d,]+\s?円")
 
 _SKIP_HREF = re.compile(r"(/cart|/account|/login|#|mailto:|tel:|/tag/|/category/|/collections/?$)", re.I)
+# Site navigation masquerading as listings — e.g. Yahoo's "search 2LT エンジン
+# on Yahoo Shopping (18,038 items)" cross-links.
+_SKIP_TEXT = ("で探す", "を検索", "件）", "yahoo!ショッピング", "search results",
+              "view all", "see all", "相場を調べる")
 
 
 def _extract(html: str, base_url: str, site_name: str) -> list[Listing]:
@@ -37,6 +41,8 @@ def _extract(html: str, base_url: str, site_name: str) -> list[Listing]:
         if not text or len(text) < 8 or len(text) > 250:
             continue
         if not (_CODE_RE.search(text) or _DIESEL_RE.search(text)):
+            continue
+        if any(s in text.lower() for s in _SKIP_TEXT):
             continue
         href = a["href"]
         if _SKIP_HREF.search(href):
