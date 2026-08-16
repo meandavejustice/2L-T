@@ -250,6 +250,34 @@ canada_sites:
       - https://www.kijiji.ca/b-canada/toyota-2lt/k0l0
       - https://www.kijiji.ca/b-canada/toyota-diesel-engine/k0l0
 
+# --------------------------------- more US marketplaces (best effort) -------
+# SPA-heavy sites; the health table shows which actually render for us.
+us_sites:
+  - name: Mercari US
+    urls:
+      - https://www.mercari.com/search/?keyword=toyota%202lt%20engine
+      - https://www.mercari.com/search/?keyword=toyota%20diesel%20engine
+  - name: OfferUp
+    urls:
+      - https://offerup.com/search?q=toyota+2lt+engine
+      - https://offerup.com/search?q=toyota+diesel+engine
+  - name: KSL Classifieds (UT/ID)
+    urls:
+      - https://classifieds.ksl.com/search/keyword/toyota%202lt
+      - https://classifieds.ksl.com/search/keyword/toyota%20diesel%20engine
+
+# --------------------------- overseas classifieds (ship to USA) -------------
+# Flagged as imports; scraped with the generic extractor.
+overseas_sites:
+  - name: 🇳🇿 Trade Me (NZ)
+    urls:
+      - https://www.trademe.co.nz/a/motors/car-parts-accessories/search?search_string=2LT+engine
+      - https://www.trademe.co.nz/a/motors/car-parts-accessories/search?search_string=toyota+2LT
+  - name: 🇦🇺 Gumtree (AU)
+    urls:
+      - https://www.gumtree.com.au/s-2lt+engine/k0
+      - https://www.gumtree.com.au/s-toyota+2lt/k0
+
 # ------------------------------------- Japan exporters (ship to USA) --------
 # The deepest 2L-T supply is Japan-side. Listings land in the digest's
 # separate "Imports — ships to USA" section. Buyee fronts Yahoo Auctions JP;
@@ -263,6 +291,15 @@ japan_exporters:
       - https://auctions.yahoo.co.jp/search/search?p=2LT%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3&n=50
       - https://auctions.yahoo.co.jp/search/search?p=2L-T%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3&n=50
       - https://auctions.yahoo.co.jp/search/search?p=2LTE%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3&n=50
+  # Yahoo Shopping (fixed-price stores; separate from the Auctions pool).
+  - name: 🇯🇵 Yahoo Shopping JP
+    urls:
+      - https://shopping.yahoo.co.jp/search?p=2LT+%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3
+      - https://shopping.yahoo.co.jp/search?p=2L-T+%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3
+  - name: 🇯🇵 Mercari JP
+    urls:
+      - https://jp.mercari.com/search?keyword=2LT%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3
+      - https://jp.mercari.com/search?keyword=2L-T%20%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3
   - name: 🇯🇵 BE FORWARD Auto Parts
     urls:
       - https://autoparts.beforward.jp/search?keyword=2LT

@@ -14,7 +14,8 @@ import yaml
 
 from . import classify, digest, emailer, state, translate
 from .models import Listing
-from .sources import craigslist, discovery, ebay, forums, japan, jdm_sites
+from .sources import (craigslist, discovery, ebay, forums, japan, jdm_sites,
+                      row52)
 
 
 def run() -> int:
@@ -38,6 +39,24 @@ def run() -> int:
 
     print("Scanning JDM importer sites…")
     found, hs = jdm_sites.scan(config.get("jdm_sites", []))
+    health.extend(hs)
+    for l in found:
+        listings.setdefault(l.id, l)
+
+    print("US marketplaces (Mercari/OfferUp/KSL)…")
+    found, hs = jdm_sites.scan(config.get("us_sites", []))
+    health.extend(hs)
+    for l in found:
+        listings.setdefault(l.id, l)
+
+    print("Junkyard watch (Row52)…")
+    found, h = row52.scan()
+    health.append(h)
+    for l in found:
+        listings.setdefault(l.id, l)
+
+    print("Overseas classifieds (NZ/AU)…")
+    found, hs = japan.scan(config.get("overseas_sites", []))
     health.extend(hs)
     for l in found:
         listings.setdefault(l.id, l)
