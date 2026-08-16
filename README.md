@@ -15,9 +15,11 @@ transmission appears to be included.
 | **US JDM importers** | Site-search scrape of 10 importers (JDM Engine Depot, JDM Engine Zone, JDM Racing Motors, JDM of San Diego, JDM Engine Corp, JDM Alliance, JDM New York, JDM Orlando, Foreign Engines, Engine World) | Add more in `config.yaml` |
 | **Web discovery** | DuckDuckGo (keyless) or Brave Search API | Catches forums (ih8mud, Expedition Portal), small importers, and marketplaces we don't scrape |
 | **🇯🇵 Japan exporters** | Yahoo Auctions (Buyee links), Yahoo Shopping, Mercari JP, BE FORWARD, Croooober | Ships to USA; separate "Imports" digest section with freight guidance; Japanese-language classification |
-| **US marketplaces** | Mercari US, OfferUp, KSL Classifieds | Best-effort scrapes; health table shows which render for CI |
 | **Junkyard watch** | Row52 (Pick-n-Pull) | LN-VIN (diesel chassis) Toyotas in self-serve yards — complete engines at scrap prices |
-| **🇳🇿🇦🇺 Overseas classifieds** | Trade Me NZ, Gumtree AU | Surf/Hilux country; flagged as imports |
+
+(Mercari US, OfferUp, KSL, Trade Me NZ, and Gumtree AU hard-block CI traffic
+and are not scraped directly; their listings surface via web discovery when
+indexed.)
 
 Every digest ends with a **source health table** so a blocked or broken
 source is visible immediately instead of silently disappearing.
