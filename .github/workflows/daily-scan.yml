@@ -2,8 +2,11 @@ name: Daily 2L-T Scan
 
 on:
   schedule:
-    # 13:00 UTC ≈ 6am PT / 9am ET, every day
-    - cron: "0 13 * * *"
+    # Full daily digest: 11:00 UTC = 7am EDT (6am EST in winter)
+    - cron: "0 11 * * *"
+    # Alert-only scans (email only when a NEW engine-tier listing appears):
+    # 17:00 & 23:00 UTC = 1pm & 7pm EDT
+    - cron: "0 17,23 * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -35,6 +38,9 @@ jobs:
         # Each falls back to a repository *variable* of the same name in case
         # the value was added under the Variables tab instead of Secrets.
         env:
+          # False only on the alert-cron firings: email goes out only when a
+          # new engine-tier listing appeared.
+          FULL_DIGEST: ${{ github.event.schedule != '0 17,23 * * *' }}
           SMTP_HOST: ${{ secrets.SMTP_HOST || vars.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT || vars.SMTP_PORT }}
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME || vars.SMTP_USERNAME }}

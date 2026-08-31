@@ -105,9 +105,17 @@ def run() -> int:
     print(f"Digest written to digest.html — subject: {subj}")
 
     recipient = config.get("recipient", "")
+    # Alert-only runs (FULL_DIGEST=false) email only when something new and
+    # engine-shaped appeared; the morning run always sends the full digest.
+    full_digest = os.environ.get("FULL_DIGEST", "true").strip().lower() != "false"
+    new_engines = [l for l in new if not l.is_part]
     if emailer.configured():
-        to = emailer.send(subj, html_body, recipient)
-        print(f"Digest emailed to {to}")
+        if full_digest or new_engines:
+            alert_subj = subj if full_digest else f"🚨 {subj}"
+            to = emailer.send(alert_subj, html_body, recipient)
+            print(f"Digest emailed to {to}")
+        else:
+            print("Alert run: no new engine-tier listings — email skipped")
     else:
         print("SMTP not configured (SMTP_HOST/SMTP_USERNAME/SMTP_PASSWORD) — "
               "digest NOT emailed. See README for secret setup.")
