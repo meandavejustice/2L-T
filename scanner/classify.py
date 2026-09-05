@@ -93,7 +93,9 @@ _PART_SIGNALS = [
     "filter", "valve seal", "mount ", "mounting", "con rod", "bracket",
     "engine part", "bell housing", "bellhousing", "rocker", "rad cap",
     "cap lever", "fitting", "fittng", "brochure", "handbuch", "werkstatt",
-    "fleetguard", "covers petrol",
+    "fleetguard", "covers petrol", "splash guard", "mud guard", "termostat",
+    "housing cap", "outlet housing", "shock absorber", "kyb",
+    "pickup parts", "parts lot", "misc parts",
     # Japanese part words
     "マウント", "ガスケット", "ポンプ", "ラジエーター", "ラジエター",
     "インジェクター", "ハーネス", "オルタネーター", "セルモーター",
@@ -105,7 +107,9 @@ _PART_SIGNALS = [
     "カタログ", "ステッカー", "エンブレム", "コンロッド", "メタル",
     "サーモスタット", "プーリー", "アイドラー", "シリンダーヘッド",
     "ロッカー", "ダウンサス", "ダウンフォース", "レシーバ", "リザーブ",
-    "エアコン", "タンク", "補修",
+    "エアコン", "タンク", "補修", "ショック", "カヤバ", "サスペンション",
+    "ウォーター", "クラッチ", "カップ", "キット", "オイルチェンジャー",
+    "チェンジャー",
 ]
 # Only ENGINE-specific assembly wording can rescue a listing that also has a
 # part signal — bare "complete"/"recon" must not ("Complete Cylinder Head"
@@ -125,12 +129,19 @@ _ASSEMBLY_SIGNALS = [
 # "…kit"/"…set" style wording marks a parts product even when assembly words
 # appear ("Complete Engine Gasket Kit" is a gasket kit, not an engine).
 _KIT_OVERRIDES = (" kit", " set", "pair of", " pcs", "2x ", "4x ", "x2 ",
-                  "x4 ", "セット")
+                  "x4 ", "セット", "キット")
 
 # Fluids: "5L" on an oil/coolant bottle is 5 liters, not the 5L engine.
 _VISCOSITY_RE = re.compile(r"\b\d{1,2}w[- ]?\d{2}\b")
 _FLUID_WORDS = ("engine oil", "motor oil", "coolant", "antifreeze",
-                "anti-freeze", "anti-boil")
+                "anti-freeze", "anti-boil", "gear oil", "diff oil",
+                "gearbox oil", "transmission fluid")
+
+# Wanted/WTB ads are buyers, not sellers (including our own posted ads
+# echoing back through the scrape).
+_WANTED_RE = re.compile(
+    r"\b(wtb|wanted|want to buy|looking for|in search of|iso)\b", re.I)
+_WANTED_JP = ("求む", "買います", "探してます", "譲ってください")
 
 # Modern Toyota diesels and non-Toyota lumps that sneak past the family
 # regex via "2.0 diesel"-style titles.
@@ -142,7 +153,8 @@ _MODERN_WORDS = ("avensis", "rav4", "rav-4", "aygo", "proace", "corolla",
 # 2LT/2LTE mention) is a different engine, not a mislabeled 2L-T.
 _OTHER_DIESEL_RE = re.compile(
     r"\b(1hz|1hd(?:\s?f?te?)?|1kz(?:\s?te?)?|1kd|2kd|12ht?|13bt?|2h|3b|14b|15b"
-    r"|1ad|2ad|1gd|2gd|1cd|2cd|1nd|2az|dw10|d\s?4\s?d)\b")
+    r"|1ad|2ad|1gd|2gd|1cd|2cd|1nd|2az|dw10|d\s?4\s?d"
+    r"|1dz|2dz|11z|13z|14z)\b")  # forklift diesels
 
 # The 2L-T is 2.4L; an explicit different displacement (4.2L, 3.0L, …) without
 # a 2LT mention means it's some other engine. "2.0 diesel"/"3.0 TD" style
@@ -207,6 +219,9 @@ def is_relevant(listing: Listing) -> bool:
     # Fluids first: oil/coolant bottles are sized in liters ("5L 5W-30"),
     # which collides with the 5L engine code.
     if _VISCOSITY_RE.search(text) or any(w in text for w in _FLUID_WORDS):
+        return False
+    # Wanted ads are buyers, not inventory.
+    if _WANTED_RE.search(text) or any(w in listing.text() for w in _WANTED_JP):
         return False
     lt, lte = _mentions(listing.text())
     if lt or lte:

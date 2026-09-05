@@ -122,6 +122,19 @@ check_part("トヨタ クラウン MIYACO ミヤコ サーモスタット LS130 
 check_part("Toyota W58 Bell housing For L Engine 2L, 2LT, 3L Used", "", True)
 check_part("Toyota Hilux Surf MK5 1992 2.4D 2L-TE - Engine Bracket", "", True)
 check_part("Toyota 2L, 2L-T Motor Zusatz-Werkstatthandbuch August 1995", "", True)
+check_part("ENGINE SPLASH GUARD Toyota 4-Runner 2.4 TD 4x4 2L-T 1987", "", True)
+check_part("KYB カヤバ ショック マークII LX80 2L-T ディーゼル", "", True)
+check_part("トヨタ ランドクルーザー クラッチディスク LJ71 2L-T", "", True)
+check_part("ハイエース LH120G 2L-T リア カップキット", "", True)
+
+# Wanted ads and fluids are excluded outright; forklift diesels too.
+check("WANTED: Toyota 2L-T turbo diesel engine", "", False)
+check("WTB toyota 2lt engine complete", "", False)
+check("5L MANUAL GEAR BOX & DIFF OIL FOR TOYOTA CELICA PETROL DIESEL", "", False)
+check("Toyota diesel Engine 4 Cyl. Model 1DZ III Excellent Runner", "", False)
+# But real engines with none of those words still pass.
+check("Toyota 2L-T diesel engine, can sell for less minus the diesel pump", "",
+      True, classify.LIKELY_2LT)
 check_part("トヨタ 2LT エンジン本体 実働", "", False)
 
 # Translation detection (display-only; no network in tests).

@@ -26,7 +26,11 @@ _DIESEL_RE = re.compile(
     re.I)
 _PRICE_RE = re.compile(r"[\$¥]\s?[\d,]+(?:\.\d{2})?|[\d,]+\s?円")
 
-_SKIP_HREF = re.compile(r"(/cart|/account|/login|#|mailto:|tel:|/tag/|/category/|/collections/?$)", re.I)
+# Anchors that link to another SEARCH page are site navigation (related-query
+# suggestions, "browse more" links), never listings.
+_SKIP_HREF = re.compile(
+    r"(/cart|/account|/login|#|mailto:|tel:|/tag/|/category/|/collections/?$"
+    r"|/search[/?]|[?&](p|q|keyword|search_string)=)", re.I)
 # Site navigation masquerading as listings — e.g. Yahoo's "search 2LT エンジン
 # on Yahoo Shopping (18,038 items)" cross-links.
 _SKIP_TEXT = ("で探す", "を検索", "件）", "yahoo!ショッピング", "search results",
