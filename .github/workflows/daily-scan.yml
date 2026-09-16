@@ -49,6 +49,7 @@ jobs:
           DIGEST_TO: ${{ secrets.DIGEST_TO || vars.DIGEST_TO }}
           EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID || vars.EBAY_CLIENT_ID }}
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET || vars.EBAY_CLIENT_SECRET }}
+          BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY || vars.BRAVE_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY || vars.GOOGLE_API_KEY }}
           GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID || vars.GOOGLE_CSE_ID }}
         run: python -m scanner.main
