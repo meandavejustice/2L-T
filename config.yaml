@@ -213,10 +213,6 @@ jdm_sites:
     urls:
       - https://yota1performance.com/?s=2LT
       - https://www.yota1performance.com/?s=toyota+diesel
-  - name: JDM Engine USA
-    urls:
-      - https://jdmengineusa.com/?s=2LT
-      - https://jdmengineusa.com/search?q=2LT
 
 # ------------------------------------------------- forum classifieds --------
 # New-thread RSS from the big Toyota forums — the main private-party venue.

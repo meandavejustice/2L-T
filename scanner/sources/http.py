@@ -18,8 +18,15 @@ _session.headers.update({
 
 
 def get(url: str, *, delay: float = 0.8, timeout: int = 25, **kwargs) -> requests.Response:
-    """GET with a crawl delay and sane defaults. Raises on HTTP errors."""
+    """GET with a crawl delay and sane defaults. Raises on HTTP errors.
+
+    Server errors (5xx) — often soft throttling from Yahoo and friends —
+    get one retry after a long pause before giving up.
+    """
     time.sleep(delay)
     resp = _session.get(url, timeout=timeout, **kwargs)
+    if resp.status_code >= 500:
+        time.sleep(10)
+        resp = _session.get(url, timeout=timeout, **kwargs)
     resp.raise_for_status()
     return resp

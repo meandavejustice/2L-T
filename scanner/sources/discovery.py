@@ -87,6 +87,13 @@ def scan(config: dict) -> tuple[list[Listing], SourceHealth]:
         else:
             listings = _duckduckgo(queries)
             note = "via DuckDuckGo (keyless; set BRAVE_API_KEY for the Brave API)"
+        if not listings and not key:
+            # DDG answering with zero results across every query means it is
+            # serving bot-challenge pages — report it as broken, not green.
+            return [], SourceHealth(
+                SOURCE, False, 0,
+                "0 results across all queries — DuckDuckGo is likely "
+                "bot-challenging CI; add a free BRAVE_API_KEY secret to fix")
         return listings, SourceHealth(SOURCE, True, len(listings), note)
     except Exception as e:
         return [], SourceHealth(SOURCE, False, 0, f"{type(e).__name__}: {e}")
