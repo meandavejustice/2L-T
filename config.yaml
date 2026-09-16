@@ -184,6 +184,11 @@ jdm_sites:
       - https://jdmofsandiego.com/?s=2LT
       - https://jdmofsandiego.com/?s=toyota+diesel
       - https://jdmofsandiego.com/search?q=2LT
+  - name: JDM Engine World (Queens NY)
+    urls:
+      - https://jdmengineworld.com/?s=2LT
+      - https://jdmengineworld.com/search?q=2LT
+      - https://jdmengineworld.com/?s=toyota+diesel
   - name: JDM New York
     urls:
       - https://www.jdmnewyork.com/?s=2LT
