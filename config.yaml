@@ -204,10 +204,6 @@ jdm_sites:
       - https://www.engineworldinc.com/?s=2LT
       - https://engineworldusa.com/?s=2LT
       - https://www.engineworldinc.com/search?q=2LT
-  - name: Diesel Toys (TX)
-    urls:
-      - https://www.dieseltoys.com/?s=2LT
-      - https://www.dieseltoys.com/?s=toyota+diesel+engine
   - name: Torfab (WA)
     urls:
       - https://www.torfab.com/?s=2LT
